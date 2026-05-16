@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-const RazorpayButton = ({ amount = 349, buttonText = "Buy Now →" }) => {
+const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -197,7 +197,7 @@ export default function Home() {
           </div>
           <div className="nav-links">
             <a href="#pricing" className="neo-btn" style={{ fontSize: '13px', padding: '10px 20px', background: 'var(--accent)', color: 'var(--black)' }}>
-              Buy Now — Rs. 349
+              Buy Now — Rs. 299
             </a>
           </div>
         </div>
@@ -217,11 +217,11 @@ export default function Home() {
 
             <div className="fade-up fade-up-delay-3" style={{ maxWidth: '420px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'Instrument Serif' }}>Rs. 349</span>
+                <span style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'Instrument Serif' }}>Rs. 299</span>
                 <span style={{ fontSize: '14px', color: 'var(--muted)', textDecoration: 'line-through', fontWeight: 600 }}>Rs. 699</span>
                 <span style={{ background: 'var(--accent)', border: '2px solid var(--black)', padding: '2px 8px', fontSize: '10px', fontWeight: 700 }}>LIFETIME</span>
               </div>
-              <RazorpayButton buttonText="Buy Now — Rs. 349" />
+              <RazorpayButton buttonText="Buy Now — Rs. 299" />
             </div>
 
             <div className="fade-up fade-up-delay-4" style={{ marginTop: '20px', display: 'flex', gap: '20px', fontSize: '13px', color: 'var(--muted)', flexWrap: 'wrap' }}>
@@ -432,7 +432,7 @@ export default function Home() {
             Sound familiar? PosturePal stages the intervention your body has been planning.
           </p>
           <div className="scroll-fade" style={{ display: 'flex', justifyContent: 'center' }}>
-            <RazorpayButton buttonText="Buy Now — Rs. 349" />
+            <RazorpayButton buttonText="Buy Now — Rs. 299" />
           </div>
         </div>
       </section>
@@ -554,7 +554,7 @@ export default function Home() {
 
           <div className="neo-card scroll-fade" style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '48px', textAlign: 'center' }}>
 
-            <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. 349</p>
+            <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. 299</p>
 
             <div style={{ textAlign: 'left', margin: '0 auto 32px', maxWidth: '280px' }}>
               {[
@@ -571,7 +571,7 @@ export default function Home() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
-              <RazorpayButton buttonText="Pay Rs. 349 →" />
+              <RazorpayButton buttonText="Pay Rs. 299 →" />
             </div>
 
             <p style={{ marginTop: '20px', fontSize: '13px', color: 'var(--muted)' }}>
@@ -625,7 +625,7 @@ export default function Home() {
           <h2 style={{ fontSize: '64px', color: 'white', marginBottom: '32px' }}>Your neck asked us to intervene.</h2>
 
           <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
-            <RazorpayButton buttonText="Buy Now — Rs. 349" />
+            <RazorpayButton buttonText="Buy Now — Rs. 299" />
           </div>
 
           <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '16px', fontSize: '14px' }}>
