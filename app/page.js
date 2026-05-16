@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import PurchaseModal from './components/PurchaseModal';
 
-const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
+const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [customer, setCustomer] = useState({ first_name: '', last_name: '', email: '' });
 
   const loadRazorpayScript = () => new Promise((resolve, reject) => {
     if (typeof window === 'undefined') {
@@ -30,8 +33,42 @@ const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
     document.body.appendChild(script);
   });
 
+  const validateCustomer = () => {
+    const name = `${customer.first_name}`.trim();
+    const lastName = `${customer.last_name}`.trim();
+    const email = `${customer.email}`.trim();
+
+    if (!name) return 'Please enter your first name.';
+    if (!lastName) return 'Please enter your last name.';
+    if (!email) return 'Please enter your email address.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Please enter a valid email address.';
+    return null;
+  };
+
+  const openModal = () => {
+    setError(null);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    if (loading) return;
+    setModalOpen(false);
+    setError(null);
+    setCustomer({ first_name: '', last_name: '', email: '' });
+  };
+
+  const handleChange = (field) => (event) => {
+    setCustomer((current) => ({ ...current, [field]: event.target.value }));
+  };
+
   const handlePayment = async () => {
     setError(null);
+    const validationError = validateCustomer();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -41,7 +78,14 @@ const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
       const createOrderResponse = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: amountPaise })
+        body: JSON.stringify({
+          amount: amountPaise,
+          customer: {
+            first_name: customer.first_name.trim(),
+            last_name: customer.last_name.trim(),
+            email: customer.email.trim()
+          }
+        })
       });
 
       if (!createOrderResponse.ok) {
@@ -58,7 +102,8 @@ const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
         description: 'PosturePal Lifetime License',
         order_id: order.order_id,
         prefill: {
-          email: ''
+          email: customer.email.trim(),
+          name: `${customer.first_name.trim()} ${customer.last_name.trim()}`
         },
         theme: {
           color: '#000000'
@@ -92,6 +137,21 @@ const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
               throw new Error(verifyData.message || 'Payment verification failed.');
             }
 
+            // Generate license key and store it
+            const licenseResponse = await fetch('/api/generate-license', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                payment_id: response.razorpay_payment_id,
+                email: customer.email
+              })
+            });
+            if (!licenseResponse.ok) {
+              const err = await licenseResponse.json().catch(() => null);
+              console.error('License generation failed:', err);
+            }
+
+            // Finally redirect to success page
             window.location.href = '/success';
           } catch (verifyError) {
             setError(verifyError.message || 'Payment verification failed.');
@@ -101,7 +161,7 @@ const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
       };
 
       const razorpay = new window.Razorpay(options);
-      razorpay.on('payment.failed', function (failure) {
+      razorpay.on('payment.failed', function () {
         setError('Payment failed. Please try again.');
         setLoading(false);
       });
@@ -116,7 +176,7 @@ const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
   return (
     <>
       <button
-        onClick={handlePayment}
+        onClick={openModal}
         className="neo-btn accent"
         style={{
           fontSize: '16px',
@@ -129,11 +189,19 @@ const RazorpayButton = ({ amount = 299, buttonText = "Buy Now →" }) => {
       >
         {loading ? 'Processing…' : buttonText}
       </button>
-      {error ? (
-        <div style={{ marginTop: '12px', color: '#b91c1c', fontSize: '14px', maxWidth: '420px' }}>
-          {error}
-        </div>
-      ) : null}
+
+      {modalOpen && (
+        <PurchaseModal
+          onClose={closeModal}
+          loading={loading}
+          customer={customer}
+          handleChange={handleChange}
+          handlePayment={handlePayment}
+          error={error}
+          setError={setError}
+          amount={amount}
+        />
+      )}
     </>
   );
 };
