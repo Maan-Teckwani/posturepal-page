@@ -146,13 +146,15 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
                 email: customer.email
               })
             });
-            if (!licenseResponse.ok) {
-              const err = await licenseResponse.json().catch(() => null);
-              console.error('License generation failed:', err);
+
+            const licenseData = await licenseResponse.json().catch(() => null);
+            if (!licenseResponse.ok || !licenseData?.licenseKey) {
+              const err = licenseData || {};
+              throw new Error(err.error || 'Unable to generate license key.');
             }
 
-            // Finally redirect to success page
-            window.location.href = '/success';
+            // Finally redirect to success page and display the key there
+            window.location.href = `/success?license=${encodeURIComponent(licenseData.licenseKey)}`;
           } catch (verifyError) {
             setError(verifyError.message || 'Payment verification failed.');
             setLoading(false);

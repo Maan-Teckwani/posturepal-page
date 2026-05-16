@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export default function SuccessPage() {
+  const searchParams = useSearchParams();
   const [os, setOs] = useState('unknown');
+  const [licenseKey, setLicenseKey] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const downloadLinks = {
     mac: process.env.NEXT_PUBLIC_DOWNLOAD_URL_MAC || 'https://github.com/YOUR_USERNAME/posturepal-releases/releases/latest/download/PosturePal.dmg',
@@ -12,12 +17,22 @@ export default function SuccessPage() {
   };
 
   useEffect(() => {
-    // Basic OS detection for the download button
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    if (userAgent.indexOf('mac') !== -1) setOs('mac');
-    else if (userAgent.indexOf('win') !== -1) setOs('win');
-    else if (userAgent.indexOf('linux') !== -1) setOs('linux');
-    
+    const timeout = window.setTimeout(() => {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      if (userAgent.indexOf('mac') !== -1) setOs('mac');
+      else if (userAgent.indexOf('win') !== -1) setOs('win');
+      else if (userAgent.indexOf('linux') !== -1) setOs('linux');
+
+      const keyFromUrl = searchParams?.get('license');
+      if (keyFromUrl) {
+        setLicenseKey(keyFromUrl);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [searchParams]);
+
+  useEffect(() => {
     // Add scroll animations
     const observer = new IntersectionObserver(
       (entries) => {
@@ -57,10 +72,10 @@ export default function SuccessPage() {
         padding: '0 24px'
       }}>
         <div style={{ maxWidth: 'var(--max-width)', margin: '0 auto', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <a href="/" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textDecoration: 'none', color: 'var(--black)' }}>
+          <Link href="/" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textDecoration: 'none', color: 'var(--black)' }}>
             <div style={{ fontWeight: 700, fontSize: '18px', lineHeight: 1.1 }}>PosturePal</div>
             <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px', letterSpacing: '0.02em' }}>back to home</div>
-          </a>
+          </Link>
           <div className="nav-links">
             <a href="mailto:support@posturepal.io" style={{ textDecoration: 'none', color: 'var(--black)', fontSize: '14px', fontWeight: 600 }}>Need help?</a>
           </div>
@@ -75,30 +90,60 @@ export default function SuccessPage() {
             <div className="neo-tag" style={{ background: '#d4f57a' }}>PAYMENT SUCCESSFUL</div>
             <h1 style={{ fontSize: '64px', margin: '20px 0', lineHeight: 1.1 }}>The group chat is at peace.</h1>
             <p style={{ fontSize: '20px', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto' }}>
-              Your spine thanks you. A receipt and your license key have been sent to your email.
+              Your purchase is complete. Your license key is shown below for instant activation.
             </p>
           </div>
 
           {/* LICENSE KEY CARD */}
           <div className="neo-card scroll-fade" style={{ background: 'var(--white)', marginBottom: '48px', padding: '40px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '24px', marginBottom: '8px', fontFamily: 'Space Grotesk, sans-serif' }}>Check your inbox</h2>
+            <h2 style={{ fontSize: '24px', marginBottom: '8px', fontFamily: 'Space Grotesk, sans-serif' }}>Your license key is ready</h2>
             <p style={{ color: 'var(--muted)', fontSize: '15px', marginBottom: '24px' }}>
-              Your PosturePal license key and download links have been emailed to you. If you do not see it within a few minutes, check your spam folder.
+              Copy the key below and paste it into the PosturePal desktop app when prompted.
             </p>
 
-            <div style={{ 
-              background: '#f5f5f5', 
-              border: '2px solid var(--black)', 
-              padding: '24px 28px', 
-              fontSize: '18px', 
-              fontFamily: 'Inter, sans-serif', 
-              fontWeight: '600', 
-              letterSpacing: '1px',
-              maxWidth: '560px',
-              margin: '0 auto',
-              boxShadow: 'inset 2px 2px 0px rgba(0,0,0,0.05)'
-            }}>
-              Your license key is on the way to your email address.
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+              <div style={{ 
+                background: '#f5f5f5', 
+                border: '2px solid var(--black)', 
+                padding: '24px 28px', 
+                fontSize: '18px', 
+                fontFamily: 'Inter, sans-serif', 
+                fontWeight: '600', 
+                letterSpacing: '1px',
+                maxWidth: '560px',
+                width: '100%',
+                margin: '0 auto',
+                boxShadow: 'inset 2px 2px 0px rgba(0,0,0,0.05)',
+                wordBreak: 'break-all'
+              }}>
+                {licenseKey || 'No license key found. If your purchase completed, refresh this page or return to the home page and try again.'}
+              </div>
+
+              <button
+                onClick={async () => {
+                  if (!licenseKey) return;
+                  try {
+                    await navigator.clipboard.writeText(licenseKey);
+                    setCopied(true);
+                    window.setTimeout(() => setCopied(false), 2000);
+                  } catch (err) {
+                    console.error('Copy failed', err);
+                  }
+                }}
+                style={{
+                  background: 'var(--black)',
+                  color: 'var(--white)',
+                  border: 'none',
+                  padding: '12px 24px',
+                  fontSize: '15px',
+                  letterSpacing: '0.02em',
+                  cursor: licenseKey ? 'pointer' : 'not-allowed',
+                  opacity: licenseKey ? 1 : 0.6
+                }}
+                disabled={!licenseKey}
+              >
+                {copied ? 'Copied!' : 'Copy license key'}
+              </button>
             </div>
 
             <p style={{ fontSize: '13px', color: 'var(--muted)', marginTop: '16px' }}>*The same license works on up to 2 devices.</p>

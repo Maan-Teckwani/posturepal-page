@@ -74,7 +74,7 @@ export default function PurchaseModal({
           <div className="neo-tag" style={{ marginBottom: '16px' }}>ENTER DETAILS</div>
           <h2 style={{ fontSize: '30px', lineHeight: 1.1, margin: 0 }}>Complete your purchase</h2>
           <p style={{ color: '#4b5563', marginTop: '12px', fontSize: '15px' }}>
-            Add your name and email so we can send your lifetime license details and download links.
+            Add your name and email so we can create your license record and complete the payment.
           </p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
@@ -119,7 +119,7 @@ export default function PurchaseModal({
             {loading ? 'Processing…' : `Pay Rs. ${amount} →`}
           </button>
           <div style={{ color: '#4b5563', fontSize: '14px', maxWidth: '260px' }}>
-            After payment, you will be taken to the success page and receive the license link by email.
+            After payment, you will be taken to the success page and see your license key there.
           </div>
         </div>
         {error && (
