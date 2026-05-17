@@ -296,7 +296,9 @@ export default function Home() {
                 <span style={{ fontSize: '14px', color: 'var(--muted)', textDecoration: 'line-through', fontWeight: 600 }}>Rs. 699</span>
                 <span style={{ background: 'var(--accent)', border: '2px solid var(--black)', padding: '2px 8px', fontSize: '10px', fontWeight: 700 }}>LIFETIME</span>
               </div>
-              <RazorpayButton buttonText={`Buy Now — Rs. ${PRICE}`} />
+              <a href="#pricing" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
+                Buy Now — Rs. {PRICE}
+              </a>
             </div>
 
             <div className="fade-up fade-up-delay-4" style={{ marginTop: '20px', display: 'flex', gap: '20px', fontSize: '13px', color: 'var(--muted)', flexWrap: 'wrap' }}>
@@ -446,7 +448,9 @@ export default function Home() {
             Sound familiar? PosturePal stages the intervention your body has been planning.
           </p>
           <div className="scroll-fade" style={{ display: 'flex', justifyContent: 'center' }}>
-            <RazorpayButton buttonText={`Buy Now — Rs. ${PRICE}`} />
+            <a href="#pricing" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
+              Buy Now — Rs. {PRICE}
+            </a>
           </div>
         </div>
       </section>
@@ -608,7 +612,9 @@ export default function Home() {
         <div className="container scroll-fade">
           <h2 style={{ fontSize: '64px', color: 'white', marginBottom: '32px' }}>Your neck asked us to intervene.</h2>
           <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
-            <RazorpayButton buttonText={`Buy Now — Rs. ${PRICE}`} />
+            <a href="#pricing" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
+              Buy Now — Rs. {PRICE}
+            </a>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '16px', fontSize: '14px' }}>
             One payment. Lifetime peace. Get PosturePal now.
