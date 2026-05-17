@@ -1,13 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import PurchaseModal from './components/PurchaseModal';
 
-const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
+const RazorpayButton = ({ amount = 349, buttonText = "Buy Now →" }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [customer, setCustomer] = useState({ first_name: '', last_name: '', email: '' });
 
   const loadRazorpayScript = () => new Promise((resolve, reject) => {
     if (typeof window === 'undefined') {
@@ -33,42 +30,8 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
     document.body.appendChild(script);
   });
 
-  const validateCustomer = () => {
-    const name = `${customer.first_name}`.trim();
-    const lastName = `${customer.last_name}`.trim();
-    const email = `${customer.email}`.trim();
-
-    if (!name) return 'Please enter your first name.';
-    if (!lastName) return 'Please enter your last name.';
-    if (!email) return 'Please enter your email address.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Please enter a valid email address.';
-    return null;
-  };
-
-  const openModal = () => {
-    setError(null);
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    if (loading) return;
-    setModalOpen(false);
-    setError(null);
-    setCustomer({ first_name: '', last_name: '', email: '' });
-  };
-
-  const handleChange = (field) => (event) => {
-    setCustomer((current) => ({ ...current, [field]: event.target.value }));
-  };
-
   const handlePayment = async () => {
     setError(null);
-    const validationError = validateCustomer();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -78,14 +41,7 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
       const createOrderResponse = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: amountPaise,
-          customer: {
-            first_name: customer.first_name.trim(),
-            last_name: customer.last_name.trim(),
-            email: customer.email.trim()
-          }
-        })
+        body: JSON.stringify({ amount: amountPaise })
       });
 
       if (!createOrderResponse.ok) {
@@ -102,8 +58,7 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
         description: 'PosturePal Lifetime License',
         order_id: order.order_id,
         prefill: {
-          email: customer.email.trim(),
-          name: `${customer.first_name.trim()} ${customer.last_name.trim()}`
+          email: ''
         },
         theme: {
           color: '#000000'
@@ -137,24 +92,7 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
               throw new Error(verifyData.message || 'Payment verification failed.');
             }
 
-            // Generate license key and store it
-            const licenseResponse = await fetch('/api/generate-license', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                payment_id: response.razorpay_payment_id,
-                email: customer.email
-              })
-            });
-
-            const licenseData = await licenseResponse.json().catch(() => null);
-            if (!licenseResponse.ok || !licenseData?.licenseKey) {
-              const err = licenseData || {};
-              throw new Error(err.error || 'Unable to generate license key.');
-            }
-
-            // Finally redirect to success page and display the key there
-            window.location.href = `/success?license=${encodeURIComponent(licenseData.licenseKey)}`;
+            window.location.href = '/success';
           } catch (verifyError) {
             setError(verifyError.message || 'Payment verification failed.');
             setLoading(false);
@@ -163,7 +101,7 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
       };
 
       const razorpay = new window.Razorpay(options);
-      razorpay.on('payment.failed', function () {
+      razorpay.on('payment.failed', function (failure) {
         setError('Payment failed. Please try again.');
         setLoading(false);
       });
@@ -178,7 +116,7 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
   return (
     <>
       <button
-        onClick={openModal}
+        onClick={handlePayment}
         className="neo-btn accent"
         style={{
           fontSize: '16px',
@@ -191,19 +129,11 @@ const RazorpayButton = ({ amount = 299, buttonText = 'Buy Now →' }) => {
       >
         {loading ? 'Processing…' : buttonText}
       </button>
-
-      {modalOpen && (
-        <PurchaseModal
-          onClose={closeModal}
-          loading={loading}
-          customer={customer}
-          handleChange={handleChange}
-          handlePayment={handlePayment}
-          error={error}
-          setError={setError}
-          amount={amount}
-        />
-      )}
+      {error ? (
+        <div style={{ marginTop: '12px', color: '#b91c1c', fontSize: '14px', maxWidth: '420px' }}>
+          {error}
+        </div>
+      ) : null}
     </>
   );
 };
@@ -267,7 +197,7 @@ export default function Home() {
           </div>
           <div className="nav-links">
             <a href="#pricing" className="neo-btn" style={{ fontSize: '13px', padding: '10px 20px', background: 'var(--accent)', color: 'var(--black)' }}>
-              Buy Now — Rs. 299
+              Buy Now — Rs. 349
             </a>
           </div>
         </div>
@@ -287,11 +217,11 @@ export default function Home() {
 
             <div className="fade-up fade-up-delay-3" style={{ maxWidth: '420px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'Instrument Serif' }}>Rs. 299</span>
+                <span style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'Instrument Serif' }}>Rs. 349</span>
                 <span style={{ fontSize: '14px', color: 'var(--muted)', textDecoration: 'line-through', fontWeight: 600 }}>Rs. 699</span>
                 <span style={{ background: 'var(--accent)', border: '2px solid var(--black)', padding: '2px 8px', fontSize: '10px', fontWeight: 700 }}>LIFETIME</span>
               </div>
-              <RazorpayButton buttonText="Buy Now — Rs. 299" />
+              <RazorpayButton buttonText="Buy Now — Rs. 349" />
             </div>
 
             <div className="fade-up fade-up-delay-4" style={{ marginTop: '20px', display: 'flex', gap: '20px', fontSize: '13px', color: 'var(--muted)', flexWrap: 'wrap' }}>
@@ -502,7 +432,7 @@ export default function Home() {
             Sound familiar? PosturePal stages the intervention your body has been planning.
           </p>
           <div className="scroll-fade" style={{ display: 'flex', justifyContent: 'center' }}>
-            <RazorpayButton buttonText="Buy Now — Rs. 299" />
+            <RazorpayButton buttonText="Buy Now — Rs. 349" />
           </div>
         </div>
       </section>
@@ -624,7 +554,7 @@ export default function Home() {
 
           <div className="neo-card scroll-fade" style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '48px', textAlign: 'center' }}>
 
-            <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. 299</p>
+            <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. 349</p>
 
             <div style={{ textAlign: 'left', margin: '0 auto 32px', maxWidth: '280px' }}>
               {[
@@ -641,7 +571,7 @@ export default function Home() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
-              <RazorpayButton buttonText="Pay Rs. 299 →" />
+              <RazorpayButton buttonText="Pay Rs. 349 →" />
             </div>
 
             <p style={{ marginTop: '20px', fontSize: '13px', color: 'var(--muted)' }}>
@@ -695,7 +625,7 @@ export default function Home() {
           <h2 style={{ fontSize: '64px', color: 'white', marginBottom: '32px' }}>Your neck asked us to intervene.</h2>
 
           <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
-            <RazorpayButton buttonText="Buy Now — Rs. 299" />
+            <RazorpayButton buttonText="Buy Now — Rs. 349" />
           </div>
 
           <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '16px', fontSize: '14px' }}>

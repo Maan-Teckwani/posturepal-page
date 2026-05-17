@@ -6,7 +6,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SER
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 function generateLicenseKey() {
-  const segment = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+  const segment = () => crypto.randomBytes(2).toString('hex').toUpperCase();
   return `${segment()}-${segment()}-${segment()}-${segment()}`;
 }
 
@@ -35,15 +35,14 @@ export async function POST(req) {
   const event = JSON.parse(bodyText);
   const eventName = event.event;
 
-  const paymentEntity =
-    eventName === 'payment.captured' || eventName === 'payment.authorized' || eventName === 'payment.failed'
-      ? event.payload?.payment?.entity
-      : eventName === 'payment_link.paid'
-      ? event.payload?.payment?.entity
-      : null;
+  if (eventName !== 'payment.captured' && eventName !== 'payment_link.paid') {
+    return new Response(JSON.stringify({ status: 'ignored' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  const paymentEntity = event.payload?.payment?.entity;
 
   if (!paymentEntity) {
-    return new Response('Unsupported event or missing payment entity', { status: 400 });
+    return new Response('Missing payment entity', { status: 400 });
   }
 
   const paymentId = paymentEntity.id;
@@ -68,9 +67,9 @@ export async function POST(req) {
   }
 
   const licenseKey = generateLicenseKey();
-  const downloadMac = resolveDownloadUrl('DOWNLOAD_URL_MAC', 'https://github.com/YOUR_USERNAME/posturepal-releases/releases/latest/download/PosturePal.dmg');
-  const downloadWin = resolveDownloadUrl('DOWNLOAD_URL_WIN', 'https://github.com/YOUR_USERNAME/posturepal-releases/releases/latest/download/PosturePal-Setup.exe');
-  const downloadLinux = resolveDownloadUrl('DOWNLOAD_URL_LINUX', 'https://github.com/YOUR_USERNAME/posturepal-releases/releases/latest/download/PosturePal.AppImage');
+  const downloadMac = resolveDownloadUrl('DOWNLOAD_URL_MAC', 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal.dmg');
+  const downloadWin = resolveDownloadUrl('DOWNLOAD_URL_WIN', 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal-Setup.exe');
+  const downloadLinux = resolveDownloadUrl('DOWNLOAD_URL_LINUX', 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal.AppImage');
 
   const { error: insertError } = await supabase.from('licenses').insert({
     key: licenseKey,
