@@ -61,7 +61,7 @@ const CheckoutModal = ({ onSubmit, onClose, loading }) => {
 
         <h2 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '28px', marginBottom: '6px' }}>Almost there.</h2>
         <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>
-          Your license key will be shown instantly after payment and also emailed to you.
+          Your license key will be shown instantly after payment.
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -179,7 +179,7 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
             const genData = await genRes.json();
             if (!genData.success) throw new Error(genData.error || 'License generation failed. Your key will be emailed to you.');
 
-            window.location.href = `/success?key=${encodeURIComponent(genData.licenseKey)}`;
+            window.location.href = `/success?token=${encodeURIComponent(genData.sessionToken)}`;
           } catch (err) {
             setError(err.message || 'Something went wrong. Check your email for the license key.');
             setLoading(false);
@@ -377,24 +377,20 @@ export default function Home() {
           <h2 className="scroll-fade" style={{ fontSize: '52px', maxWidth: '600px', marginBottom: '16px' }}>The group chat is not happy.</h2>
           <p className="scroll-fade" style={{ fontSize: '18px', color: 'var(--muted)', marginBottom: '48px', maxWidth: '600px' }}>Your body parts have been in crisis mode for months. Here's what they're saying.</p>
           <div className="grid-3">
-            <div className="neo-card scroll-fade" style={{ background: 'var(--accent)' }}>
-              <div style={{ fontSize: '36px', marginBottom: '16px' }}>🤕</div>
-              <h3 style={{ fontSize: '20px', marginBottom: '16px', fontFamily: 'Space Grotesk, sans-serif' }}>Neck is done.</h3>
-              <div style={{ borderLeft: '3px solid black', paddingLeft: '12px', fontStyle: 'italic', fontSize: '14px', marginBottom: '12px', color: 'black' }}>"this is the 47th goblin lean today. I'm filing HR."<br />— Neck, 2:34 PM</div>
-              <p style={{ color: 'var(--muted)' }}>Forward head posture adds 10 lbs of pressure per inch of tilt. Your neck is doing the work of a structural beam.</p>
-            </div>
-            <div className="neo-card scroll-fade" style={{ background: 'var(--white)' }}>
-              <div style={{ fontSize: '36px', marginBottom: '16px' }}>💀</div>
-              <h3 style={{ fontSize: '20px', marginBottom: '16px', fontFamily: 'Space Grotesk, sans-serif' }}>Lower Back has left the chat.</h3>
-              <div style={{ borderLeft: '3px solid black', paddingLeft: '12px', fontStyle: 'italic', fontSize: '14px', marginBottom: '12px', color: 'black' }}>"carrying the whole team again. don't @ me."<br />— Lower Back, on read</div>
-              <p style={{ color: 'var(--muted)' }}>Slouching compresses your lumbar discs and reduces oxygen to your brain. The fog you feel at 3pm? That's Lower Back's revenge.</p>
-            </div>
-            <div className="neo-card scroll-fade" style={{ background: 'var(--white)' }}>
-              <div style={{ fontSize: '36px', marginBottom: '16px' }}>👁️</div>
-              <h3 style={{ fontSize: '20px', marginBottom: '16px', fontFamily: 'Space Grotesk, sans-serif' }}>Eyes filed a formal complaint.</h3>
-              <div style={{ borderLeft: '3px solid black', paddingLeft: '12px', fontStyle: 'italic', fontSize: '14px', marginBottom: '12px', color: 'black' }}>"2.5 inches from the monitor. this is not a drill."<br />— Eyes, sent with high importance</div>
-              <p style={{ color: 'var(--muted)' }}>Screen distance affects both eye strain and posture. Too close and your whole upper body collapses forward to compensate.</p>
-            </div>
+            {[
+              { bg: 'var(--accent)', icon: '🤕', stat: '47', label: 'goblin leans', tag: 'today alone' },
+              { bg: 'var(--white)', icon: '💀', stat: 'lower back', label: 'has left the chat', tag: 'on read' },
+              { bg: 'var(--white)', icon: '👁️', stat: '2.5 in', label: 'from the screen', tag: 'not a drill' },
+            ].map((card, i) => (
+              <div key={i} className="neo-card scroll-fade" style={{ background: card.bg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
+                <div style={{ width: '52px', height: '52px', background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>{card.icon}</div>
+                <div>
+                  <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: 'Space Grotesk, sans-serif', lineHeight: 1.1 }}>{card.stat}</div>
+                  <div style={{ fontSize: '16px', fontWeight: 600, fontFamily: 'Space Grotesk, sans-serif', marginTop: '4px' }}>{card.label}</div>
+                </div>
+                <div className="neo-tag" style={{ marginTop: 'auto', marginBottom: 0 }}>{card.tag}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -462,15 +458,14 @@ export default function Home() {
           <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '56px' }}>Three steps. The group chat goes quiet.</h2>
           <div className="grid-3">
             {[
-              { num: "01", title: "Sit up straight. Click Calibrate.", desc: "PosturePal memorizes what good posture looks like for YOU in 3 seconds. This becomes the reference point — your body's peace treaty.", tag: "3 seconds" },
-              { num: "02", title: "Go back to ignoring your spine.", desc: "PosturePal hides to your system tray and watches silently. Work. Code. Doom scroll. It doesn't judge. It just watches.", tag: "Always running" },
-              { num: "03", title: "The popup arrives. The group chat calms down.", desc: "3 seconds of bad posture and a popup appears showing you exactly what the group chat is complaining about. Fix it. Done.", tag: "Instant feedback" }
+              { num: "01", title: "Sit up. Click Calibrate.", tag: "3 seconds" },
+              { num: "02", title: "Back to your doom scroll.", tag: "Always running" },
+              { num: "03", title: "Pop-up arrives. You fix it.", tag: "Instant feedback" }
             ].map((step, i) => (
               <div key={i} className="neo-card scroll-fade" style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ width: '48px', height: '48px', background: 'var(--accent)', color: 'var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700, marginBottom: '24px', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)' }}>{step.num}</div>
-                <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px', fontFamily: 'Space Grotesk, sans-serif' }}>{step.title}</h3>
-                <p style={{ color: 'var(--muted)' }}>{step.desc}</p>
-                <div className="neo-tag" style={{ marginTop: '20px', marginBottom: 0 }}>{step.tag}</div>
+                <h3 style={{ fontSize: '22px', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>{step.title}</h3>
+                <div className="neo-tag" style={{ marginTop: 'auto', marginBottom: 0 }}>{step.tag}</div>
               </div>
             ))}
           </div>
@@ -484,18 +479,18 @@ export default function Home() {
           <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '48px' }}>Everything you need, nothing you don't.</h2>
           <div className="grid-2">
             {[
-              { icon: "🎯", title: "Calibrated to your goblin lean", desc: "Sets your personal baseline. Scores relative to YOUR posture, not some ergonomics textbook written by someone who has never coded at 2am." },
-              { icon: "🔴", title: "Three signals. Three complaints resolved.", desc: "Head position, shoulder hunch, and screen distance tracked independently. The group chat gets specific — so should your fixes." },
-              { icon: "🔔", title: "3-second intervention timer", desc: "Neck gets nervous after 3 seconds of bad posture. The popup appears. You see yourself. You fix it. Neck stands down." },
-              { icon: "📊", title: "Evidence for the group chat", desc: "Daily, weekly, monthly charts. Show Lower Back the progress. He's skeptical but he'll come around." },
-              { icon: "🏆", title: "XP for good behavior", desc: "Earn XP every minute the group chat has nothing to complain about. Level up from Shrimp to PosturePal Master. Yes, really." },
-              { icon: "🔒", title: "No data leaves your device. Ever.", desc: "The AI runs locally. Your webcam feed never touches a server. Eyes was very insistent about this one." }
+              { icon: "🎯", title: "Calibrated to your goblin lean", desc: "Your baseline. Not the textbook's." },
+              { icon: "🔴", title: "Three signals. Three complaints resolved.", desc: "Head, shoulders, screen distance — tracked independently." },
+              { icon: "🔔", title: "3-second intervention timer", desc: "3 seconds of slump triggers one popup." },
+              { icon: "📊", title: "Evidence for the group chat", desc: "Daily, weekly, monthly charts. Lower Back will come around." },
+              { icon: "🏆", title: "XP for good behavior", desc: "Level up from Shrimp to PosturePal Master." },
+              { icon: "🔒", title: "No data leaves your device. Ever.", desc: "AI runs locally. Webcam never touches a server." }
             ].map((f, i) => (
               <div key={i} className="neo-card scroll-fade" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
                 <div style={{ width: '48px', height: '48px', background: 'var(--accent)', border: '2px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '22px' }}>{f.icon}</div>
                 <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '6px', fontFamily: 'Space Grotesk, sans-serif' }}>{f.title}</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: '14px' }}>{f.desc}</p>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px', fontFamily: 'Space Grotesk, sans-serif' }}>{f.title}</h3>
+                  <p style={{ color: 'var(--muted)', fontSize: '14px', margin: 0 }}>{f.desc}</p>
                 </div>
               </div>
             ))}

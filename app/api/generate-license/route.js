@@ -10,6 +10,12 @@ function generateLicenseKey() {
   return `${segment()}-${segment()}-${segment()}-${segment()}`;
 }
 
+function generateSessionToken(paymentId, secret) {
+  const payloadStr = JSON.stringify({ pid: paymentId, exp: Date.now() + 7200000 });
+  const sig = crypto.createHmac('sha256', secret).update(payloadStr).digest('hex');
+  return Buffer.from(payloadStr).toString('base64') + '.' + sig;
+}
+
 export async function POST(req) {
   try {
     const { payment_id, email } = await req.json();
@@ -27,7 +33,14 @@ export async function POST(req) {
       .maybeSingle();
 
     if (existing) {
-      return new Response(JSON.stringify({ success: true, licenseKey: existing.key }), {
+      const secret = process.env.RAZORPAY_KEY_SECRET;
+      if (!secret) {
+        return new Response(JSON.stringify({ success: false, error: 'Server configuration error' }), {
+          status: 500, headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      const sessionToken = generateSessionToken(payment_id, secret);
+      return new Response(JSON.stringify({ success: true, sessionToken }), {
         status: 200, headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -77,7 +90,15 @@ export async function POST(req) {
       `
     });
 
-    return new Response(JSON.stringify({ success: true, licenseKey }), {
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret) {
+      return new Response(JSON.stringify({ success: false, error: 'Server configuration error' }), {
+        status: 500, headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    const sessionToken = generateSessionToken(payment_id, secret);
+
+    return new Response(JSON.stringify({ success: true, sessionToken }), {
       status: 200, headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
