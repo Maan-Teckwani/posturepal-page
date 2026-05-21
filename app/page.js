@@ -98,6 +98,7 @@ const CheckoutModal = ({ onSubmit, onClose, loading }) => {
 const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
   const [error, setError] = useState(null);
 
   const loadRazorpayScript = () => new Promise((resolve, reject) => {
@@ -156,6 +157,7 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
           }
         },
         handler: async function (response) {
+          setProcessingPayment(true);
           try {
             const verifyRes = await fetch('/api/verify-payment', {
               method: 'POST',
@@ -181,6 +183,7 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
 
             window.location.href = `/success?token=${encodeURIComponent(genData.sessionToken)}`;
           } catch (err) {
+            setProcessingPayment(false);
             setError(err.message || 'Something went wrong. Check your email for the license key.');
             setLoading(false);
           }
@@ -210,6 +213,45 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
           loading={loading}
         />
       )}
+
+      {processingPayment && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)',
+          zIndex: 1001, display: 'flex', alignItems: 'center',
+          justifyContent: 'center', padding: '20px'
+        }}>
+          <style>{`@keyframes pp-spin { to { transform: rotate(360deg); } }`}</style>
+          <div style={{
+            background: 'var(--cream)', border: '2px solid var(--black)',
+            boxShadow: '8px 8px 0 var(--black)', padding: '32px 36px',
+            maxWidth: '400px', width: '100%', display: 'flex', flexDirection: 'column', gap: '20px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '38px', height: '38px', borderRadius: '50%',
+                border: '3px solid var(--black)', borderTopColor: 'var(--accent)',
+                animation: 'pp-spin 0.8s linear infinite', flexShrink: 0
+              }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: '15px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  Processing payment...
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '3px' }}>
+                  PosturePal Lifetime License
+                </div>
+              </div>
+              <div style={{ fontWeight: 700, fontSize: '15px', fontFamily: 'monospace', flexShrink: 0 }}>
+                Rs. {PRICE}
+              </div>
+            </div>
+            <div style={{ height: '1px', background: 'var(--black)' }} />
+            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0, lineHeight: 1.6 }}>
+              Verifying your payment and generating your license key. Please don't close this window.
+            </p>
+          </div>
+        </div>
+      )}
+
       <button
         onClick={() => { setError(null); setShowModal(true); }}
         className="neo-btn accent"
