@@ -1,8 +1,169 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 
 const PRICE = 299;
+
+const Reveal = ({ children, variant = 'fadeUp', delay = 0, style = {} }) => {
+  const ref = React.useRef(null);
+  const isInView = useInView(ref, { once: false, margin: '-80px' });
+  const variants = {
+    fadeUp:     { hidden: { opacity: 0, y: 24 },                                        visible: { opacity: 1, y: 0 } },
+    slideLeft:  { hidden: { opacity: 0, x: -40 },                                       visible: { opacity: 1, x: 0 } },
+    slideRight: { hidden: { opacity: 0, x: 40 },                                        visible: { opacity: 1, x: 0 } },
+    scaleBlur:  { hidden: { opacity: 0, scale: 0.96, filter: 'blur(4px)' },             visible: { opacity: 1, scale: 1, filter: 'blur(0px)' } },
+  };
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      variants={variants[variant]}
+      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+      style={style}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const ROTATING_STRINGS = [
+  'hitting auto accept on Claude',
+  'your deep work session',
+  'your upcoming deadline',
+  'your 4-hour long YouTube binge',
+];
+
+const RotatingText = () => {
+  const [index, setIndex] = React.useState(0);
+  
+  React.useEffect(() => {
+    const t = setInterval(() => setIndex(i => (i + 1) % ROTATING_STRINGS.length), 2200);
+    return () => clearInterval(t);
+  }, []);
+
+return(
+  <span style={{ display: 'inline', position: 'relative' }}>
+    <AnimatePresence mode="wait">
+      <motion.span
+        key={index}
+        // REMOVE y animation completely to fix the weird visual clipping
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }} // Clean, quick fade transition
+        style={{ 
+          display: 'inline', 
+          color: 'var(--accent)', 
+          background: 'var(--black)', 
+          padding: '4px 8px',           // Slightly enhanced padding for a cleaner pill/tag look
+          marginLeft: '6px',            // Gives a clean separation from "Back to"
+          borderRadius: '3px',          // Slightly rounds the edges for a neo-brutalist finish
+          lineHeight: '2.1',
+          boxDecorationBreak: 'clone',   
+          WebkitBoxDecorationBreak: 'clone'
+        }}
+      >
+        {ROTATING_STRINGS[index]}
+      </motion.span>
+    </AnimatePresence>
+  </span>
+);
+};
+
+const VideoDemo = ({ src }) => {
+  const videoRef = React.useRef(null);
+  const containerRef = React.useRef(null);
+  const wantsToPlayRef = React.useRef(false);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
+
+  React.useEffect(() => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+    if (!video || !container) return;
+
+    let loaded = false;
+
+    const onCanPlay = () => { if (wantsToPlayRef.current) video.play().catch(() => {}); };
+    const onPlay  = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    video.addEventListener('canplay', onCanPlay);
+    video.addEventListener('play', onPlay);
+    video.addEventListener('pause', onPause);
+
+    const loadObs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !loaded) { video.src = src; loaded = true; loadObs.disconnect(); }
+      },
+      { rootMargin: '400px' }
+    );
+    const playObs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) { wantsToPlayRef.current = true;  if (loaded) video.play().catch(() => {}); }
+        else                  { wantsToPlayRef.current = false; video.pause(); }
+      },
+      { threshold: 0.3 }
+    );
+
+    loadObs.observe(container);
+    playObs.observe(video);
+    return () => {
+      loadObs.disconnect(); playObs.disconnect();
+      video.removeEventListener('canplay', onCanPlay);
+      video.removeEventListener('play', onPlay);
+      video.removeEventListener('pause', onPause);
+    };
+  }, [src]);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) { wantsToPlayRef.current = true;  video.play().catch(() => {}); }
+    else              { wantsToPlayRef.current = false; video.pause(); }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: 'relative', width: '100%', border: '2px solid var(--black)', boxShadow: '6px 6px 0 var(--black)', background: '#111', overflow: 'hidden' }}
+    >
+      <video ref={videoRef} muted loop playsInline style={{ width: '100%', height: 'auto', display: 'block' }} />
+      <div
+        onClick={togglePlay}
+        style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer',
+          background: hovered ? 'rgba(0,0,0,0.18)' : 'transparent',
+          transition: 'background 0.15s ease',
+          pointerEvents: hovered ? 'auto' : 'none',
+        }}
+      >
+        <div style={{
+          width: '56px', height: '56px',
+          background: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '4px 4px 0 var(--black)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          opacity: hovered ? 1 : 0,
+          transform: hovered ? 'scale(1)' : 'scale(0.85)',
+          transition: 'opacity 0.15s ease, transform 0.15s ease',
+        }}>
+          {isPlaying ? (
+            <div style={{ display: 'flex', gap: '5px' }}>
+              <div style={{ width: '4px', height: '18px', background: 'var(--black)' }} />
+              <div style={{ width: '4px', height: '18px', background: 'var(--black)' }} />
+            </div>
+          ) : (
+            <div style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderLeft: '16px solid var(--black)', marginLeft: '3px' }} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CheckoutModal = ({ onSubmit, onClose, loading }) => {
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '' });
@@ -11,14 +172,8 @@ const CheckoutModal = ({ onSubmit, onClose, loading }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { firstName, lastName, email } = form;
-    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-      setError('All fields are required.');
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) { setError('All fields are required.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Please enter a valid email address.'); return; }
     setError('');
     onSubmit(form);
   };
@@ -27,68 +182,31 @@ const CheckoutModal = ({ onSubmit, onClose, loading }) => {
     <div style={{ marginBottom: '16px' }}>
       <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '6px' }}>{label}</label>
       <input
-        type={type}
-        value={form[key]}
+        type={type} value={form[key]}
         onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
         placeholder={placeholder}
-        style={{
-          width: '100%', padding: '12px', border: '2px solid var(--black)',
-          background: 'var(--white)', fontFamily: 'Space Grotesk, sans-serif',
-          fontSize: '14px', outline: 'none', boxSizing: 'border-box'
-        }}
+        style={{ width: '100%', padding: '12px', border: '2px solid var(--black)', background: 'var(--white)', fontFamily: 'Space Grotesk, sans-serif', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
       />
     </div>
   );
 
   return (
-    <div
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
-      style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
-        zIndex: 1000, display: 'flex', alignItems: 'center',
-        justifyContent: 'center', padding: '20px'
-      }}
-    >
-      <div style={{
-        background: 'var(--cream)', border: '2px solid var(--black)',
-        boxShadow: '8px 8px 0 var(--black)', padding: '40px',
-        maxWidth: '440px', width: '100%', position: 'relative'
-      }}>
-        <button
-          onClick={onClose}
-          style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1 }}
-        >×</button>
-
+    <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ background: 'var(--cream)', border: '2px solid var(--black)', boxShadow: '8px 8px 0 var(--black)', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1 }}>×</button>
         <h2 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '28px', marginBottom: '6px' }}>Almost there.</h2>
-        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>
-          Your license key will be shown instantly after payment.
-        </p>
-
+        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>Your license key will be shown instantly after payment.</p>
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <div>
-              {field('First Name', 'firstName', 'text', 'Jane')}
-            </div>
-            <div>
-              {field('Last Name', 'lastName', 'text', 'Doe')}
-            </div>
+            <div>{field('First Name', 'firstName', 'text', 'Jane')}</div>
+            <div>{field('Last Name', 'lastName', 'text', 'Doe')}</div>
           </div>
           {field('Email', 'email', 'email', 'jane@example.com')}
-
           {error && <div style={{ color: '#b91c1c', fontSize: '13px', marginBottom: '14px', marginTop: '-4px' }}>{error}</div>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="neo-btn accent"
-            style={{ width: '100%', fontSize: '15px', padding: '14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
-          >
-            {loading ? 'Processing…' : `Proceed to Payment — Rs. ${PRICE}`}
+          <button type="submit" disabled={loading} className="neo-btn accent" style={{ width: '100%', fontSize: '15px', padding: '14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+            {loading ? 'Processing...' : `Proceed to Payment — Rs. ${PRICE}`}
           </button>
-
-          <p style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', marginTop: '12px' }}>
-            Secure payment via Razorpay
-          </p>
+          <p style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', marginTop: '12px' }}>Secure payment via Razorpay</p>
         </form>
       </div>
     </div>
@@ -121,66 +239,42 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
   const handleFormSubmit = async ({ firstName, lastName, email }) => {
     setLoading(true);
     setError(null);
-
     try {
       await loadRazorpayScript();
-
       const createOrderResponse = await fetch('/api/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: PRICE * 100,
-          customer: { first_name: firstName, last_name: lastName, email }
-        })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: PRICE * 100, customer: { first_name: firstName, last_name: lastName, email } })
       });
-
       if (!createOrderResponse.ok) {
         const err = await createOrderResponse.json().catch(() => null);
         throw new Error(err?.error || 'Unable to create payment order.');
       }
-
       const order = await createOrderResponse.json();
-
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: 'PosturePal',
-        description: 'PosturePal Lifetime License',
+        amount: order.amount, currency: order.currency,
+        name: 'PosturePal', description: 'PosturePal Lifetime License',
         order_id: order.order_id,
         prefill: { name: `${firstName} ${lastName}`, email },
         theme: { color: '#000000' },
-        modal: {
-          ondismiss: () => {
-            setError('Payment cancelled. You can try again anytime.');
-            setLoading(false);
-          }
-        },
+        modal: { ondismiss: () => { setError('Payment cancelled. You can try again anytime.'); setLoading(false); } },
         handler: async function (response) {
           setProcessingPayment(true);
           try {
             const verifyRes = await fetch('/api/verify-payment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature
-              })
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ razorpay_payment_id: response.razorpay_payment_id, razorpay_order_id: response.razorpay_order_id, razorpay_signature: response.razorpay_signature })
             });
             if (!verifyRes.ok) throw new Error('Payment could not be verified.');
             const verifyData = await verifyRes.json();
             if (!verifyData.success) throw new Error(verifyData.message || 'Payment verification failed.');
-
             const genRes = await fetch('/api/generate-license', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ payment_id: response.razorpay_payment_id, email })
             });
             if (!genRes.ok) throw new Error('License generation failed. Your key will be emailed to you.');
             const genData = await genRes.json();
             if (!genData.success) throw new Error(genData.error || 'License generation failed. Your key will be emailed to you.');
-
             window.location.href = `/success?token=${encodeURIComponent(genData.sessionToken)}`;
           } catch (err) {
             setProcessingPayment(false);
@@ -189,13 +283,8 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
           }
         }
       };
-
       const razorpay = new window.Razorpay(options);
-      razorpay.on('payment.failed', () => {
-        setError('Payment failed. Please try again.');
-        setLoading(false);
-      });
-
+      razorpay.on('payment.failed', () => { setError('Payment failed. Please try again.'); setLoading(false); });
       setShowModal(false);
       razorpay.open();
     } catch (err) {
@@ -206,64 +295,28 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
 
   return (
     <>
-      {showModal && (
-        <CheckoutModal
-          onSubmit={handleFormSubmit}
-          onClose={() => { setShowModal(false); setLoading(false); }}
-          loading={loading}
-        />
-      )}
-
+      {showModal && <CheckoutModal onSubmit={handleFormSubmit} onClose={() => { setShowModal(false); setLoading(false); }} loading={loading} />}
       {processingPayment && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)',
-          zIndex: 1001, display: 'flex', alignItems: 'center',
-          justifyContent: 'center', padding: '20px'
-        }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)', zIndex: 1001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <style>{`@keyframes pp-spin { to { transform: rotate(360deg); } }`}</style>
-          <div style={{
-            background: 'var(--cream)', border: '2px solid var(--black)',
-            boxShadow: '8px 8px 0 var(--black)', padding: '32px 36px',
-            maxWidth: '400px', width: '100%', display: 'flex', flexDirection: 'column', gap: '20px'
-          }}>
+          <div style={{ background: 'var(--cream)', border: '2px solid var(--black)', boxShadow: '8px 8px 0 var(--black)', padding: '32px 36px', maxWidth: '400px', width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{
-                width: '38px', height: '38px', borderRadius: '50%',
-                border: '3px solid var(--black)', borderTopColor: 'var(--accent)',
-                animation: 'pp-spin 0.8s linear infinite', flexShrink: 0
-              }} />
+              <div style={{ width: '38px', height: '38px', borderRadius: '50%', border: '3px solid var(--black)', borderTopColor: 'var(--accent)', animation: 'pp-spin 0.8s linear infinite', flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: '15px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  Processing payment...
-                </div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '3px' }}>
-                  PosturePal Lifetime License
-                </div>
+                <div style={{ fontWeight: 700, fontSize: '15px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Processing payment...</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '3px' }}>PosturePal Lifetime License</div>
               </div>
-              <div style={{ fontWeight: 700, fontSize: '15px', fontFamily: 'monospace', flexShrink: 0 }}>
-                Rs. {PRICE}
-              </div>
+              <div style={{ fontWeight: 700, fontSize: '15px', fontFamily: 'monospace', flexShrink: 0 }}>Rs. {PRICE}</div>
             </div>
             <div style={{ height: '1px', background: 'var(--black)' }} />
-            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0, lineHeight: 1.6 }}>
-              Verifying your payment and generating your license key. Please don't close this window.
-            </p>
+            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0, lineHeight: 1.6 }}>Verifying your payment and generating your license key. Please don't close this window.</p>
           </div>
         </div>
       )}
-
-      <button
-        onClick={() => { setError(null); setShowModal(true); }}
-        className="neo-btn accent"
-        style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', cursor: 'pointer' }}
-      >
+      <button onClick={() => { setError(null); setShowModal(true); }} className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', cursor: 'pointer' }}>
         {buttonText}
       </button>
-      {error && (
-        <div style={{ marginTop: '12px', color: '#b91c1c', fontSize: '14px', maxWidth: '420px' }}>
-          {error}
-        </div>
-      )}
+      {error && <div style={{ marginTop: '12px', color: '#b91c1c', fontSize: '14px', maxWidth: '420px' }}>{error}</div>}
     </>
   );
 };
@@ -271,43 +324,18 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
 export default function Home() {
   const [openFaq, setOpenFaq] = useState(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    document.querySelectorAll('.scroll-fade').forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(24px)';
-      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-      observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <>
       {/* NAVBAR */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100, background: 'var(--white)',
-        borderBottom: '2px solid var(--black)', height: '64px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px'
-      }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--white)', borderBottom: '2px solid var(--black)', height: '64px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px' }}>
         <div style={{ maxWidth: 'var(--max-width)', margin: '0 auto', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <a href="#" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textDecoration: 'none', color: 'inherit' }}>
             <div style={{ fontWeight: 700, fontSize: '18px', lineHeight: 1.1 }}>PosturePal</div>
             <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px', letterSpacing: '0.02em' }}>your spine's intervention app</div>
-          </div>
+          </a>
           <div className="nav-links" style={{ display: 'flex', gap: '32px', fontSize: '14px', fontWeight: 500 }}>
             <a href="#benefits" style={{ textDecoration: 'none', color: 'var(--black)' }}>Benefits</a>
-            <a href="#intervention" style={{ textDecoration: 'none', color: 'var(--black)' }}>The Chat</a>
+            <a href="#features-demo" style={{ textDecoration: 'none', color: 'var(--black)' }}>Features</a>
             <a href="#how-it-works" style={{ textDecoration: 'none', color: 'var(--black)' }}>How it works</a>
             <a href="#pricing" style={{ textDecoration: 'none', color: 'var(--black)' }}>Buy</a>
             <a href="#faq" style={{ textDecoration: 'none', color: 'var(--black)' }}>FAQ</a>
@@ -320,19 +348,14 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+      {/* HERO */}
       <section className="bg-cream" style={{ padding: '20px 90px 80px 40px', display: 'flex', alignItems: 'center' }}>
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', width: '100%' }}>
           <div style={{ flex: '1 1 55%', paddingRight: '60px', minWidth: '300px', paddingTop: '30px' }}>
-            <div className="neo-tag fade-up">YOUR NECK ASKED US TO INTERVENE</div>
-            <h1 className="fade-up fade-up-delay-1" style={{ fontSize: '70px', margin: '1px 0 0 0', lineHeight: 1.1 }}>Your spine has a group chat.</h1>
-            <div className="fade-up fade-up-delay-1" style={{ fontSize: '30px', fontFamily: 'Instrument Serif', fontStyle: 'italic', marginBottom: '20px', fontWeight: 400, marginTop: '10px' }}>It's not looking good in there.</div>
-            <p className="fade-up fade-up-delay-2" style={{ fontSize: '18px', color: 'var(--muted)', maxWidth: '480px', marginBottom: '32px' }}>
-              PosturePal uses your webcam and on-device AI to catch you slouching before your body files a formal complaint.
-              <strong> One-time payment. Your spine will stop yelling.</strong>
-            </p>
-
-            <div className="fade-up fade-up-delay-3" style={{ maxWidth: '420px' }}>
+            <div className="neo-tag fade-up">YOUR POSTURE IS SUFFERING IN SILENCE</div>
+            <h1 className="fade-up fade-up-delay-1" style={{ fontSize: '58px', margin: '1px 0 0 0', lineHeight: 1.1 }}>You know that ache in your neck at the end of a long day?</h1>
+            <div className="fade-up fade-up-delay-1" style={{ fontSize: '22px', fontFamily: 'Instrument Serif', fontStyle: 'italic', marginBottom: '28px', fontWeight: 400, marginTop: '12px', color: 'var(--muted)' }}>It built up, one bad hour at a time.</div>
+            <div className="fade-up fade-up-delay-2" style={{ maxWidth: '420px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
                 <span style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'Instrument Serif' }}>Rs. {PRICE}</span>
                 <span style={{ fontSize: '14px', color: 'var(--muted)', textDecoration: 'line-through', fontWeight: 600 }}>Rs. 699</span>
@@ -342,40 +365,40 @@ export default function Home() {
                 Buy Now — Rs. {PRICE}
               </a>
             </div>
-
-            <div className="fade-up fade-up-delay-4" style={{ marginTop: '20px', display: 'flex', gap: '20px', fontSize: '13px', color: 'var(--muted)', flexWrap: 'wrap' }}>
+            <div className="fade-up fade-up-delay-3" style={{ marginTop: '20px', display: 'flex', gap: '20px', fontSize: '13px', color: 'var(--muted)', flexWrap: 'wrap' }}>
               <span>✓ Mac, Windows & Linux</span>
               <span>✓ 100% Offline AI</span>
               <span>✓ Lifetime license</span>
             </div>
           </div>
 
-          <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center', marginTop: '10', marginBottom: '40px' }}>
+          {/* Chat card — right side, unchanged */}
+          <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
             <div style={{ animation: 'float 4s ease-in-out infinite', width: '100%', maxWidth: '380px' }}>
               <div className="neo-card" style={{ width: '100%', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: '0' }}>
                 <div style={{ padding: '16px', borderBottom: '2px solid var(--black)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ display: 'flex', gap: '-4px' }}>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#8b5a2b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}></div>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', marginLeft: '-8px', border: '1px solid white' }}></div>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#f5f0e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', marginLeft: '-8px', border: '1px solid white' }}>👁</div>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#facc15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', marginLeft: '-8px', border: '1px solid white' }}></div>
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#8b5a2b' }}></div>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ef4444', marginLeft: '-8px', border: '1px solid white' }}></div>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#f5f0e8', marginLeft: '-8px', border: '1px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px' }}>•</div>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#facc15', marginLeft: '-8px', border: '1px solid white' }}></div>
                   </div>
                   <div style={{ fontWeight: 700, fontSize: '15px' }}>The Body Collective</div>
                 </div>
                 <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', fontFamily: 'Space Grotesk, sans-serif' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Neck 🟤</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Neck</div>
                     <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>he's doing the goblin lean again</div>
                     <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:41 AM</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Lower Back 🔴</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Lower Back</div>
                     <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>I can't keep carrying this team</div>
                     <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:41 AM</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Eyes 👁</div>
-                    <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>3 inches from the monitor btw<br />just thought you should know</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Eyes</div>
+                    <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>3 inches from the monitor.<br />Just thought you should know.</div>
                     <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:42 AM</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -384,7 +407,7 @@ export default function Home() {
                     <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginRight: '4px' }}>9:42 AM</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Shoulders 🟡</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Shoulders</div>
                     <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>he is NOT fine</div>
                     <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:42 AM</div>
                   </div>
@@ -412,83 +435,97 @@ export default function Home() {
         </div>
       </div>
 
-      {/* PROBLEM SECTION */}
+      {/* BENEFITS */}
       <section id="benefits" className="bg-cream">
         <div className="container">
-          <div className="neo-tag">THE SITUATION</div>
-          <h2 className="scroll-fade" style={{ fontSize: '52px', maxWidth: '600px', marginBottom: '16px' }}>The group chat is not happy.</h2>
-          <p className="scroll-fade" style={{ fontSize: '18px', color: 'var(--muted)', marginBottom: '48px', maxWidth: '600px' }}>Your body parts have been in crisis mode for months. Here's what they're saying.</p>
+          <div className="neo-tag">THE PROBLEM</div>
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '52px', maxWidth: '600px', marginBottom: '48px' }}>Most people don't notice until it's too late.</h2>
+          </Reveal>
           <div className="grid-3">
             {[
-              { bg: 'var(--accent)', icon: '🤕', stat: '47', label: 'goblin leans', tag: 'today alone' },
-              { bg: 'var(--white)', icon: '💀', stat: 'lower back', label: 'has left the chat', tag: 'on read' },
-              { bg: 'var(--white)', icon: '👁️', stat: '2.5 in', label: 'from the screen', tag: 'not a drill' },
+              { stat: '8+', label: 'hours at a desk, every day', tag: 'AND COUNTING' },
+              { stat: '+50 lbs', label: 'of extra pressure forced onto your neck when you slouch', tag: 'THE ENTIRE TIME' },
+              { stat: 'Weeks', label: 'before you start feeling the damage', tag: 'NO WARNING' },
             ].map((card, i) => (
-              <div key={i} className="neo-card scroll-fade" style={{ background: card.bg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
-                <div style={{ width: '52px', height: '52px', background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>{card.icon}</div>
-                <div>
-                  <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: 'Space Grotesk, sans-serif', lineHeight: 1.1 }}>{card.stat}</div>
-                  <div style={{ fontSize: '16px', fontWeight: 600, fontFamily: 'Space Grotesk, sans-serif', marginTop: '4px' }}>{card.label}</div>
+              <Reveal key={i} variant="fadeUp" delay={i * 0.08}>
+                <div className="neo-card" style={{ background: 'var(--white)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px', height: '100%' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'Space Grotesk, sans-serif', lineHeight: 1.1 }}>{card.stat}</div>
+                  <div style={{ fontSize: '16px', color: 'var(--muted)', lineHeight: 1.4 }}>{card.label}</div>
+                  <div className="neo-tag" style={{ marginTop: 'auto', marginBottom: 0 }}>{card.tag}</div>
                 </div>
-                <div className="neo-tag" style={{ marginTop: 'auto', marginBottom: 0 }}>{card.tag}</div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* INTERVENTION SECTION */}
-      <section id="intervention" className="bg-white">
+      {/* FEATURE DEMOS */}
+      <section id="features-demo" className="bg-white">
         <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <div className="neo-tag">EXHIBIT A</div>
-            <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '16px' }}>The full conversation.</h2>
-            <p className="scroll-fade" style={{ fontSize: '17px', color: 'var(--muted)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 48px auto' }}>
-              Recovered from your spine's group chat. Posted with permission (they insisted).
-            </p>
-          </div>
-          <div className="scroll-fade" style={{ maxWidth: '600px', margin: '0 auto', background: '#f5f5f5', border: '2px solid black', boxShadow: '6px 6px 0 black', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', paddingBottom: '16px', borderBottom: '2px solid black' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'black', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>💬</div>
+          <div className="neo-tag">SEE IT IN ACTION</div>
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '52px', marginBottom: '56px' }}>What PosturePal does.</h2>
+          </Reveal>
+
+          {/* Row 1: video left, text right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '64px', marginBottom: '80px', flexWrap: 'wrap' }}>
+            <Reveal variant="slideLeft" style={{ flex: '1 1 46%', minWidth: '280px' }}>
+              <VideoDemo src="/demo-posture-score.mp4" />
+            </Reveal>
+            <Reveal variant="slideRight" style={{ flex: '1 1 46%', minWidth: '280px' }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '15px' }}>🧠 The Body Collective</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Neck, Lower Back, Eyes, Shoulders, and You</div>
+                <div style={{ width: '40px', height: '40px', background: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '16px', marginBottom: '20px' }}>01</div>
+                <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '34px', marginBottom: '12px', lineHeight: 1.15 }}>Know your score.</h3>
+                <p style={{ color: 'var(--muted)', fontSize: '16px', marginBottom: '20px', maxWidth: '400px' }}>AI analyzes your sitting position and scores it 0–100 in real time. Always know exactly where you stand.</p>
+                {['Real-time AI posture analysis', 'Score from 0 to 100, updated live', 'Tells you exactly what to adjust'].map((b, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '15px', marginBottom: '8px' }}>
+                    <span style={{ background: 'var(--black)', color: 'var(--accent)', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '10px', fontWeight: 700 }}>✓</span>
+                    {b}
+                  </div>
+                ))}
               </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
-              <div style={{ background: 'rgba(0,0,0,0.08)', padding: '4px 12px', borderRadius: '20px', fontSize: '11px', color: 'var(--muted)', textAlign: 'center' }}>Today 9:41 AM</div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {[
-                { sender: 'Neck 🟤', msg: 'ok so are we going to talk about what\'s happening', align: 'start' },
-                { sender: 'Lower Back 🔴', msg: 'I\'ve been trying to raise this for MONTHS', align: 'start' },
-                { sender: 'Eyes 👁', msg: 'not to alarm anyone but we are approximately 2.5 inches from the monitor', align: 'start' },
-                { sender: 'Shoulders 🟡', msg: 'I\'ve been up around my ears since the standup call', align: 'start' },
-                { sender: 'You', msg: 'I\'m literally fine guys', align: 'end' },
-                { sender: 'Lower Back 🔴', msg: 'HE SAID FINE', align: 'start' },
-                { sender: 'Neck 🟤', msg: 'PosturePal starts now. we already downloaded it.', align: 'start' },
-              ].map((m, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: m.align === 'end' ? 'flex-end' : 'flex-start', gap: '2px' }}>
-                  {m.align !== 'end' && <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted)', marginBottom: '2px' }}>{m.sender}</div>}
-                  <div style={{
-                    background: m.align === 'end' ? 'black' : 'white',
-                    color: m.align === 'end' ? 'white' : 'inherit',
-                    border: m.align === 'end' ? 'none' : '1.5px solid #e0e0e0',
-                    borderRadius: m.align === 'end' ? '12px 0 12px 12px' : '0 12px 12px 12px',
-                    padding: '10px 14px', fontSize: '14px', maxWidth: '80%',
-                    boxShadow: m.align === 'end' ? 'none' : '2px 2px 0 rgba(0,0,0,0.06)'
-                  }}>{m.msg}</div>
-                </div>
-              ))}
-            </div>
+            </Reveal>
           </div>
-          <p className="scroll-fade" style={{ textAlign: 'center', fontSize: '15px', fontStyle: 'italic', color: 'var(--muted)', marginTop: '24px', marginBottom: '24px' }}>
-            Sound familiar? PosturePal stages the intervention your body has been planning.
-          </p>
-          <div className="scroll-fade" style={{ display: 'flex', justifyContent: 'center' }}>
-            <a href="#pricing" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
-              Buy Now — Rs. {PRICE}
-            </a>
+
+          {/* Row 2: text left, video right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '64px', marginBottom: '80px', flexWrap: 'wrap' }}>
+            <Reveal variant="slideLeft" style={{ flex: '1 1 320px', minWidth: '280px' }}>
+              <div>
+                <div style={{ width: '40px', height: '40px', background: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '16px', marginBottom: '20px' }}>02</div>
+                <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '34px', marginBottom: '12px', lineHeight: 1.15 }}>Get nudged before it hurts.</h3>
+                <p style={{ color: 'var(--muted)', fontSize: '16px', marginBottom: '20px', maxWidth: '400px' }}>Runs silently. The moment your posture drops, a small notification appears. One glance, one adjustment.</p>
+                {['Runs silently in the background', 'Non-intrusive desktop notification', 'One glance to correct and move on'].map((b, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '15px', marginBottom: '8px' }}>
+                    <span style={{ background: 'var(--black)', color: 'var(--accent)', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '10px', fontWeight: 700 }}>✓</span>
+                    {b}
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+            <Reveal variant="slideRight" style={{ flex: '1 1 46%', minWidth: '280px' }}>
+              <VideoDemo src="/demo-slouch-alerts.mp4" />
+            </Reveal>
+          </div>
+
+          {/* Row 3: video left, text right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '64px', flexWrap: 'wrap' }}>
+            <Reveal variant="slideLeft" style={{ flex: '1 1 46%', minWidth: '280px' }}>
+              <VideoDemo src="/demo-progress.mp4" />
+            </Reveal>
+            <Reveal variant="slideRight" style={{ flex: '1 1 46%', minWidth: '280px' }}>
+              <div>
+                <div style={{ width: '40px', height: '40px', background: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '16px', marginBottom: '20px' }}>03</div>
+                <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '34px', marginBottom: '12px', lineHeight: 1.15 }}>Track your improvement.</h3>
+                <p style={{ color: 'var(--muted)', fontSize: '16px', marginBottom: '20px', maxWidth: '400px' }}>See exactly how much time you spend in good vs bad posture — daily and weekly — so improvement is visible.</p>
+                {['Good vs bad posture time split', 'Daily and weekly score trends', 'Long-term progress tracking'].map((b, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '15px', marginBottom: '8px' }}>
+                    <span style={{ background: 'var(--black)', color: 'var(--accent)', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '10px', fontWeight: 700 }}>✓</span>
+                    {b}
+                  </div>
+                ))}
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -496,66 +533,47 @@ export default function Home() {
       {/* HOW IT WORKS */}
       <section id="how-it-works" className="bg-cream">
         <div className="container">
-          <div className="neo-tag">THE INTERVENTION PLAN</div>
-          <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '56px' }}>Three steps. The group chat goes quiet.</h2>
+          <div className="neo-tag">HOW IT WORKS</div>
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '52px', marginBottom: '56px' }}>Three steps.</h2>
+          </Reveal>
           <div className="grid-3">
             {[
-              { num: "01", title: "Sit up. Click Calibrate.", tag: "3 seconds" },
-              { num: "02", title: "Back to your doom scroll.", tag: "Always running" },
-              { num: "03", title: "Pop-up arrives. You fix it.", tag: "Instant feedback" }
+              { num: '01', title: 'Sit up. Click Calibrate.' },
+              { num: '02', title: null },
+              { num: '03', title: 'Pop-up arrives. You fix it.' },
             ].map((step, i) => (
-              <div key={i} className="neo-card scroll-fade" style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ width: '48px', height: '48px', background: 'var(--accent)', color: 'var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700, marginBottom: '24px', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)' }}>{step.num}</div>
-                <h3 style={{ fontSize: '22px', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>{step.title}</h3>
-                <div className="neo-tag" style={{ marginTop: 'auto', marginBottom: 0 }}>{step.tag}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section id="features" className="bg-white">
-        <div className="container">
-          <div className="neo-tag">WHAT POSTUREPAL TELLS THE GROUP CHAT</div>
-          <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '48px' }}>Everything you need, nothing you don't.</h2>
-          <div className="grid-2">
-            {[
-              { icon: "🎯", title: "Calibrated to your goblin lean", desc: "Your baseline. Not the textbook's." },
-              { icon: "🔴", title: "Three signals. Three complaints resolved.", desc: "Head, shoulders, screen distance — tracked independently." },
-              { icon: "🔔", title: "3-second intervention timer", desc: "3 seconds of slump triggers one popup." },
-              { icon: "📊", title: "Evidence for the group chat", desc: "Daily, weekly, monthly charts. Lower Back will come around." },
-              { icon: "🏆", title: "XP for good behavior", desc: "Level up from Shrimp to PosturePal Master." },
-              { icon: "🔒", title: "No data leaves your device. Ever.", desc: "AI runs locally. Webcam never touches a server." }
-            ].map((f, i) => (
-              <div key={i} className="neo-card scroll-fade" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                <div style={{ width: '48px', height: '48px', background: 'var(--accent)', border: '2px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '22px' }}>{f.icon}</div>
-                <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px', fontFamily: 'Space Grotesk, sans-serif' }}>{f.title}</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: '14px', margin: 0 }}>{f.desc}</p>
+              <Reveal key={i} variant="fadeUp" delay={i * 0.08}>
+                <div className="neo-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div style={{ width: '48px', height: '48px', background: 'var(--accent)', color: 'var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700, marginBottom: '24px', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)' }}>{step.num}</div>
+                  <h3 style={{ fontSize: '22px', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', lineHeight: '1.4' }}>
+                    {step.num === '02' ? <>Back to {" "}<RotatingText /></> : step.title}
+                  </h3>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* TESTIMONIALS */}
-      <section id="testimonials" className="bg-cream" style={{ overflow: 'hidden' }}>
+      <section id="testimonials" className="bg-white" style={{ overflow: 'hidden' }}>
         <div className="container" style={{ paddingBottom: '48px' }}>
-          <div className="neo-tag">OTHER PEOPLE'S GROUP CHATS</div>
-          <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '48px' }}>Real people. Very relieved spines.</h2>
+          <div className="neo-tag">WHAT USERS SAY</div>
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '52px', marginBottom: '48px' }}>Real people. Less back pain.</h2>
+          </Reveal>
         </div>
         <div style={{ display: 'flex', width: 'fit-content', animation: 'marquee 30s linear infinite' }}>
           {[1, 2].map(group => (
             <div key={group} style={{ display: 'flex', gap: '24px', paddingRight: '24px', paddingLeft: group === 1 ? '40px' : '0' }}>
               {[
-                { quote: "I opened PosturePal as a joke and my neck has been suspiciously quiet ever since.", name: "Sarah J." },
-                { quote: "The popup caught me doing the goblin lean 11 times on day one. I thought I had good posture. I was wrong. Lower Back knew.", name: "Mark T." },
-                { quote: "My chiropractor asked what changed. I said a small app staged an intervention. He did not find it as funny as I did.", name: "Elena R." },
-                { quote: "Best money I've spent this year. My spine has finally left the group chat. Well. It's on mute at least.", name: "David K." },
-                { quote: "Three weeks in and my afternoon headaches are gone. Coincidence? Shoulders says no.", name: "Priya M." },
-                { quote: "PosturePal is the only coworker who gives me honest feedback without scheduling a meeting about it.", name: "James L." }
+                { quote: "I opened PosturePal as a joke. My neck has been quiet ever since.", name: "Sarah J." },
+                { quote: "It caught me slouching 11 times on day one. I thought I had good posture.", name: "Mark T." },
+                { quote: "My chiropractor asked what changed. I told him I have an AI watching my posture.", name: "Elena R." },
+                { quote: "Best money I've spent this year. Back pain is practically gone after three weeks.", name: "David K." },
+                { quote: "Three weeks in and my afternoon headaches are gone.", name: "Priya M." },
+                { quote: "The only app that gives me honest feedback without scheduling a meeting.", name: "James L." },
               ].map((t, i) => (
                 <div key={i} className="neo-card" style={{ width: '300px', flexShrink: 0, padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <p style={{ fontFamily: 'Instrument Serif', fontStyle: 'italic', fontSize: '16px', marginBottom: '16px', lineHeight: 1.5 }}>"{t.quote}"</p>
@@ -575,93 +593,148 @@ export default function Home() {
         </div>
       </section>
 
+      {/* COMPARISON */}
+      <section id="compare" className="bg-cream">
+        <div className="container">
+          <div className="neo-tag">WHY POSTUREPAL</div>
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '52px', marginBottom: '16px' }}>Cheaper than a chiropractor. Smarter than a lumbar pillow.</h2>
+          </Reveal>
+          <p style={{ fontSize: '17px', color: 'var(--muted)', marginBottom: '48px', maxWidth: '560px' }}>Most solutions are expensive, passive, or require you to remember to use them.</p>
+          <div className="grid-3">
+            {[
+              {
+                tag: 'RECURRING COST', title: 'Physiotherapy / Chiro',
+                bullets: ['Rs. 1,500–4,000 per session', 'Fixes symptoms, not the habit', 'Requires regular appointments', 'No reminders between visits'],
+                accent: false,
+              },
+              {
+                tag: 'EXPENSIVE & PASSIVE', title: 'Ergonomic Furniture',
+                bullets: ['Rs. 15,000–80,000+ upfront', 'No alerts when you slouch', 'Easy to ignore over time', 'Adjusts your setup, not your behavior'],
+                accent: false,
+              },
+              {
+                tag: 'JUST RIGHT', title: 'PosturePal',
+                bullets: ['One-time Rs. 299', 'Active alerts the moment you slouch', 'Always running in the background', '100% offline — no subscription'],
+                accent: true,
+              },
+            ].map((col, i) => (
+              <Reveal key={i} variant="fadeUp" delay={i * 0.08}>
+                <div className="neo-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', background: col.accent ? 'var(--accent)' : 'var(--white)', boxShadow: col.accent ? '8px 8px 0 var(--black)' : 'var(--shadow-md)' }}>
+                  <div className="neo-tag" style={{ background: col.accent ? 'var(--black)' : 'var(--accent)', color: col.accent ? 'var(--accent)' : 'var(--black)' }}>{col.tag}</div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>{col.title}</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                    {col.bullets.map((b, j) => (
+                      <div key={j} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', fontSize: '14px' }}>
+                        <span style={{ color: col.accent ? 'var(--black)' : 'var(--muted)', fontWeight: 700, flexShrink: 0 }}>{col.accent ? '✓' : '—'}</span>
+                        <span style={{ color: col.accent ? 'var(--black)' : 'var(--muted)' }}>{b}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {col.accent && (
+                    <a href="#pricing" className="neo-btn" style={{ marginTop: 'auto', display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+                      Get PosturePal →
+                    </a>
+                  )}
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* PRICING */}
       <section id="pricing" className="bg-white" style={{ textAlign: 'center' }}>
         <div className="container">
           <div className="neo-tag">BUY NOW</div>
-          <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '16px' }}>The group chat has been waiting.</h2>
-          <p className="scroll-fade" style={{ color: 'var(--muted)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 48px auto' }}>
-            One payment. Lifetime peace. No subscriptions. No drama. Just a quiet spine.
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '52px', marginBottom: '16px' }}>One payment. Lifetime access.</h2>
+          </Reveal>
+          <p style={{ color: 'var(--muted)', marginBottom: '48px', maxWidth: '480px', margin: '0 auto 48px auto' }}>
+            No subscription. No recurring fees. License key shown instantly after payment.
           </p>
-          <div className="neo-card scroll-fade" style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '48px', textAlign: 'center' }}>
-            <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. {PRICE}</p>
-            <div style={{ textAlign: 'left', margin: '0 auto 32px', maxWidth: '280px' }}>
-              {[
-                "✓ Lifetime license (not a subscription)",
-                "✓ 2 devices",
-                "✓ 100% offline AI",
-                "✓ No webcam footage leaves your device",
-                "✓ License key shown instantly after payment",
-              ].map((feature, i) => (
-                <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.15)', fontSize: '15px' }}>
-                  {feature}
-                </div>
-              ))}
+          <Reveal variant="fadeUp">
+            <div className="neo-card" style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '48px', textAlign: 'center' }}>
+              <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. {PRICE}</p>
+              <div style={{ textAlign: 'left', margin: '0 auto 32px', maxWidth: '280px' }}>
+                {[
+                  '✓ Lifetime license — not a subscription',
+                  '✓ 2 devices',
+                  '✓ 100% offline AI',
+                  '✓ Webcam footage stays on your device',
+                  '✓ License key shown instantly',
+                ].map((feature, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.15)', fontSize: '15px' }}>
+                    {feature}
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <RazorpayButton buttonText={`Pay Rs. ${PRICE} →`} />
+              </div>
+              <p style={{ marginTop: '20px', fontSize: '13px', color: 'var(--muted)' }}>Secure payment via Razorpay.</p>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <RazorpayButton buttonText={`Pay Rs. ${PRICE} →`} />
-            </div>
-            <p style={{ marginTop: '20px', fontSize: '13px', color: 'var(--muted)' }}>
-              Secure payment via Razorpay. License key shown instantly.
-            </p>
-          </div>
-          <p className="scroll-fade" style={{ marginTop: '20px', fontStyle: 'italic', color: 'var(--muted)' }}>
-            Lower Back has reviewed this pricing and confirms it's worth it.
-          </p>
+          </Reveal>
         </div>
       </section>
 
       {/* FAQ */}
       <section id="faq" className="bg-cream">
         <div className="container" style={{ maxWidth: '720px', margin: '0 auto' }}>
-          <div className="neo-tag">QUESTIONS THE GROUP CHAT HAD</div>
-          <h2 className="scroll-fade" style={{ fontSize: '52px', marginBottom: '48px' }}>Questions answered.</h2>
-          <div className="scroll-fade">
-            {[
-              { q: "When does this ship?", a: "It's available now. Buy it, download it, and start improving your posture today." },
-              { q: "Does my webcam footage get sent anywhere?", a: "Never. All AI processing happens on your device. Eyes was personally involved in this decision and will not budge." },
-              { q: "Does it work on Mac, Windows, and Linux?", a: "Yes. The group chat does not discriminate by operating system." },
-              { q: "What if I wear glasses or have a beard?", a: "PosturePal tracks skeletal keypoints — shoulders, ears, nose — not facial features. Glasses and beards are irrelevant. Neck doesn't care what you look like, only how you sit." },
-              { q: "Can I use it on two computers?", a: "Yes. The license covers 2 devices. Lower Back travels with you." },
-              { q: "Is this a subscription?", a: "No. One payment. Lifetime access. No subscription drama. Ever." }
-            ].map((faq, i) => (
-              <div key={i} style={{ border: '2px solid black', marginBottom: '-2px', position: 'relative' }}>
-                <div
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 600, fontSize: '16px', cursor: 'pointer', background: openFaq === i ? 'var(--accent)' : 'var(--white)', transition: 'background 0.2s' }}
-                >
-                  {faq.q}
-                  <span style={{ fontSize: '20px', fontWeight: 300 }}>{openFaq === i ? '−' : '+'}</span>
-                </div>
-                {openFaq === i && (
-                  <div style={{ padding: '0 24px 20px', fontSize: '15px', color: 'var(--muted)', lineHeight: 1.7, borderTop: '2px solid black', background: 'white' }}>
-                    <p style={{ marginTop: '20px' }}>{faq.a}</p>
+          <div className="neo-tag">FAQ</div>
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '52px', marginBottom: '48px' }}>Questions answered.</h2>
+          </Reveal>
+          <Reveal variant="fadeUp">
+            <div>
+              {[
+                { q: "Is it available now?", a: "Yes. Buy it, download it, done." },
+                { q: "Does my webcam footage get sent anywhere?", a: "No. All processing is on-device. Nothing leaves your machine." },
+                { q: "Does it work on Mac, Windows, and Linux?", a: "Yes, all three." },
+                { q: "What if I wear glasses or have a beard?", a: "PosturePal tracks skeletal points — shoulders, ears, nose — not your face. Glasses and beards are irrelevant." },
+                { q: "Can I use it on two computers?", a: "Yes. Your license covers 2 devices." },
+                { q: "Is this a subscription?", a: "No. One payment, lifetime access." },
+              ].map((faq, i) => (
+                <div key={i} style={{ border: '2px solid black', marginBottom: '-2px', position: 'relative' }}>
+                  <div
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 600, fontSize: '16px', cursor: 'pointer', background: openFaq === i ? 'var(--accent)' : 'var(--white)', transition: 'background 0.2s' }}
+                  >
+                    {faq.q}
+                    <span style={{ fontSize: '20px', fontWeight: 300 }}>{openFaq === i ? '−' : '+'}</span>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+                  {openFaq === i && (
+                    <div style={{ padding: '0 24px 20px', fontSize: '15px', color: 'var(--muted)', lineHeight: 1.7, borderTop: '2px solid black', background: 'white' }}>
+                      <p style={{ marginTop: '20px' }}>{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA FOOTER */}
       <section className="bg-black" style={{ color: 'white', padding: '100px 24px 60px', textAlign: 'center' }}>
-        <div className="container scroll-fade">
-          <h2 style={{ fontSize: '64px', color: 'white', marginBottom: '32px' }}>Your neck asked us to intervene.</h2>
+        <div className="container">
+          <Reveal variant="scaleBlur">
+            <h2 style={{ fontSize: '64px', color: 'white', marginBottom: '32px' }}>Stop hurting. Start sitting right.</h2>
+          </Reveal>
           <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
             <a href="#pricing" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
               Buy Now — Rs. {PRICE}
             </a>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '16px', fontSize: '14px' }}>
-            One payment. Lifetime peace. Get PosturePal now.
+            One payment. Lifetime access. Works offline.
           </p>
           <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: '60px 0 40px' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
             <div style={{ fontWeight: 700, fontSize: '16px' }}>PosturePal</div>
             <div style={{ display: 'flex', gap: '24px', fontSize: '14px' }}>
               <a href="#benefits" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Benefits</a>
-              <a href="#intervention" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>The Chat</a>
+              <a href="#features-demo" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Features</a>
               <a href="#how-it-works" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>How it works</a>
               <a href="#pricing" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Buy</a>
               <a href="#faq" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>FAQ</a>
