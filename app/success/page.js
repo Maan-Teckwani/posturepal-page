@@ -183,7 +183,7 @@ function SuccessContent() {
           <div className="neo-card scroll-fade" style={{ background: 'var(--white)', marginBottom: '48px', padding: '40px', textAlign: 'center' }}>
             <h2 style={{ fontSize: '22px', marginBottom: '8px' }}>Your License Key</h2>
             <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '24px' }}>
-              This key has also been emailed to you. It activates PosturePal on up to 2 devices.
+              This key activates PosturePal on up to 2 devices.
             </p>
             <div style={{
               background: '#d4f57a', border: '2px solid var(--black)',
