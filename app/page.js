@@ -352,91 +352,55 @@ export default function Home() {
       </nav>
 
       {/* HERO */}
-      <section className="bg-cream" style={{ padding: '20px 90px 80px 40px', display: 'flex', alignItems: 'center' }}>
-        <div className="container" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', width: '100%' }}>
-          <div style={{ flex: '1 1 55%', paddingRight: '60px', minWidth: '300px', paddingTop: '30px' }}>
-            <div className="neo-tag fade-up">YOUR POSTURE IS SUFFERING IN SILENCE</div>
-            <h1 className="fade-up fade-up-delay-1" style={{ fontSize: '58px', margin: '1px 0 0 0', lineHeight: 1.1 }}>You know that ache in your neck at the end of a long day?</h1>
-            <div className="fade-up fade-up-delay-1" style={{ fontSize: '22px', fontFamily: 'Instrument Serif', fontStyle: 'italic', marginBottom: '28px', fontWeight: 400, marginTop: '12px', color: 'var(--muted)' }}>It built up, one bad hour at a time.</div>
-            <div className="fade-up fade-up-delay-2" style={{ maxWidth: '420px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'Instrument Serif' }}>Rs. {PRICE}</span>
-                <span style={{ fontSize: '14px', color: 'var(--muted)', textDecoration: 'line-through', fontWeight: 600 }}>Rs. 699</span>
-                <span style={{ background: 'var(--accent)', border: '2px solid var(--black)', padding: '2px 8px', fontSize: '10px', fontWeight: 700 }}>LIFETIME</span>
-              </div>
-              <a href="#pricing" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
-                Buy Now — Rs. {PRICE}
-              </a>
-            </div>
-            <div className="fade-up fade-up-delay-3" style={{ marginTop: '20px', display: 'flex', gap: '20px', fontSize: '13px', color: 'var(--muted)', flexWrap: 'wrap' }}>
-              <span>✓ Mac, Windows & Linux</span>
-              <span>✓ 100% Offline AI</span>
-              <span>✓ Lifetime license</span>
-            </div>
-          </div>
+      <section className="bg-cream" style={{ padding: '36px 24px 56px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            style={{ fontSize: 'clamp(56px, 10vw, 112px)', fontWeight: 900, lineHeight: 0.9, WebkitTextStroke: '3px var(--black)', color: 'transparent', letterSpacing: '-0.02em', fontFamily: 'Space Grotesk, sans-serif', marginBottom: '8px' }}
+          >
+            FIX YOUR
+          </motion.div>
 
-          {/* Chat card — right side, unchanged */}
-          <div style={{ flex: '1 1 45%', minWidth: '300px', display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
-            <div style={{ animation: 'float 4s ease-in-out infinite', width: '100%', maxWidth: '380px' }}>
-              <div className="neo-card" style={{ width: '100%', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: '0' }}>
-                <div style={{ padding: '16px', borderBottom: '2px solid var(--black)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ display: 'flex' }}>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#8b5a2b' }}></div>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ef4444', marginLeft: '-8px', border: '1px solid white' }}></div>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#f5f0e8', marginLeft: '-8px', border: '1px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px' }}>•</div>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#facc15', marginLeft: '-8px', border: '1px solid white' }}></div>
-                  </div>
-                  <div style={{ fontWeight: 700, fontSize: '15px' }}>The Body Collective</div>
-                </div>
-                <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', fontFamily: 'Space Grotesk, sans-serif' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Neck</div>
-                    <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>he's doing the goblin lean again</div>
-                    <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:41 AM</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Lower Back</div>
-                    <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>I can't keep carrying this team</div>
-                    <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:41 AM</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Eyes</div>
-                    <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>3 inches from the monitor.<br />Just thought you should know.</div>
-                    <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:42 AM</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>You</div>
-                    <div style={{ background: 'var(--black)', color: 'var(--white)', padding: '8px 12px', borderRadius: '12px', borderTopRightRadius: '0', maxWidth: '85%' }}>I'm fine</div>
-                    <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginRight: '4px' }}>9:42 AM</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--muted)', marginBottom: '3px' }}>Shoulders</div>
-                    <div style={{ background: '#f3f4f6', padding: '8px 12px', borderRadius: '12px', borderTopLeftRadius: '0', maxWidth: '85%' }}>he is NOT fine</div>
-                    <div style={{ fontSize: '9px', color: 'var(--muted)', marginTop: '2px', marginLeft: '4px' }}>9:42 AM</div>
-                  </div>
-                </div>
-                <div style={{ padding: '12px 16px', borderTop: '2px solid var(--black)', background: '#fafafa' }}>
-                  <div style={{ background: '#e5e7eb', borderRadius: '20px', padding: '8px 16px', color: 'var(--muted)', fontSize: '13px' }}>Type a message...</div>
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            style={{ marginBottom: '36px' }}
+          >
+            <motion.div
+              whileHover={{ x: -4, y: -4, boxShadow: '10px 10px 0 var(--black)' }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              style={{ display: 'inline-block', background: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '6px 6px 0 var(--black)', padding: '4px 24px 10px', cursor: 'default' }}
+            >
+              <div style={{ fontSize: 'clamp(56px, 10vw, 112px)', fontWeight: 900, lineHeight: 0.95, color: 'var(--black)', letterSpacing: '-0.02em', fontFamily: 'Space Grotesk, sans-serif' }}>
+                POSTURE!
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            style={{ fontSize: '17px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto 32px', lineHeight: 1.75 }}
+          >
+            PosturePal turns your laptop's webcam into a quiet posture coach that nudges you before the ache sets in. Quiet. Offline. One payment.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.34, ease: [0.16, 1, 0.3, 1] }}
+            style={{ display: 'flex', justifyContent: 'center' }}
+          >
+            <a href="#pricing-card" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', textDecoration: 'none' }}>
+              Get PosturePal →
+            </a>
+          </motion.div>
         </div>
       </section>
-
-      {/* TICKER */}
-      <div style={{ background: 'var(--black)', color: 'var(--white)', padding: '16px 0', borderTop: '2px solid var(--black)', borderBottom: '2px solid var(--black)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-        <div style={{ display: 'flex', width: 'fit-content', animation: 'marquee 20s linear infinite' }}>
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '80px', paddingRight: '80px', fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> NO SUBSCRIPTIONS</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> MAC · WINDOWS · LINUX</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> 100% OFFLINE</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> ON-DEVICE AI</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* BENEFITS */}
       <section id="benefits" className="bg-cream">
@@ -462,6 +426,20 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* TICKER */}
+      <div style={{ background: 'var(--black)', color: 'var(--white)', padding: '16px 0', borderTop: '2px solid var(--black)', borderBottom: '2px solid var(--black)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', width: 'fit-content', animation: 'marquee 20s linear infinite' }}>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '80px', paddingRight: '80px', fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> NO SUBSCRIPTIONS</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> MAC · WINDOWS · LINUX</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> 100% OFFLINE</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> ON-DEVICE AI</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* FEATURE DEMOS */}
       <section id="features-demo" className="bg-white">
@@ -657,7 +635,7 @@ export default function Home() {
             No subscription. No recurring fees. License key shown instantly after payment.
           </p>
           <Reveal variant="fadeUp">
-            <div className="neo-card" style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '48px', textAlign: 'center' }}>
+            <div id="pricing-card" className="neo-card" style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '48px', textAlign: 'center', scrollMarginTop: '80px' }}>
               <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. {PRICE}</p>
               <div style={{ textAlign: 'left', margin: '0 auto 32px', maxWidth: '280px' }}>
                 {[
