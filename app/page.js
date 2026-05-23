@@ -388,6 +388,14 @@ export default function Home() {
           >
             PosturePal turns your laptop's webcam into a quiet posture coach that nudges you before the ache sets in. Quiet. Offline. One payment.
           </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto 32px', lineHeight: 1.75, fontWeight: 500 }}
+          >
+            For Windows. Mac & Linux coming soon.
+          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -433,7 +441,7 @@ export default function Home() {
           {[1, 2, 3, 4].map(i => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '80px', paddingRight: '80px', fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> NO SUBSCRIPTIONS</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> MAC · WINDOWS · LINUX</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> WINDOWS · MAC & LINUX COMING SOON</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> 100% OFFLINE</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> ON-DEVICE AI</span>
             </div>
@@ -649,6 +657,9 @@ export default function Home() {
                     {feature}
                   </div>
                 ))}
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 0', marginTop: '4px', fontSize: '15px', fontWeight: 600 }}>
+                  Get for Windows — Mac & Linux coming soon
+                </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <RazorpayButton buttonText={`Pay Rs. ${PRICE} →`} />
@@ -671,7 +682,7 @@ export default function Home() {
               {[
                 { q: "Is it available now?", a: "Yes. Buy it, download it, done." },
                 { q: "Does my webcam footage get sent anywhere?", a: "No. All processing is on-device. Nothing leaves your machine." },
-                { q: "Does it work on Mac, Windows, and Linux?", a: "Yes, all three." },
+                { q: "Does it work on Mac, Windows, and Linux?", a: "Currently available on Windows. Mac and Linux versions are coming soon." },
                 { q: "What if I wear glasses or have a beard?", a: "PosturePal tracks skeletal points — shoulders, ears, nose — not your face. Glasses and beards are irrelevant." },
                 { q: "Can I use it on two computers?", a: "Yes. Your license covers 2 devices." },
                 { q: "Is this a subscription?", a: "No. One payment, lifetime access." },

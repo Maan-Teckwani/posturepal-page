@@ -3,10 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-const downloadLinks = {
-  mac: process.env.NEXT_PUBLIC_DOWNLOAD_URL_MAC || 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal.dmg',
-  win: process.env.NEXT_PUBLIC_DOWNLOAD_URL_WIN || 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal-Setup.exe',
-};
+const WIN_DOWNLOAD_URL = process.env.NEXT_PUBLIC_DOWNLOAD_URL_WIN || 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal-Setup.exe';
 
 function UnauthorizedPage({ message }) {
   return (
@@ -60,14 +57,7 @@ function SuccessContent() {
   const [licenseKey, setLicenseKey] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [copied, setCopied] = useState(false);
-  const [os, setOs] = useState('unknown');
   const smartscreenRef = useRef(null);
-
-  useEffect(() => {
-    const ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes('mac')) setOs('mac');
-    else if (ua.includes('win')) setOs('win');
-  }, []);
 
   useEffect(() => {
     if (!token) {
@@ -127,7 +117,7 @@ function SuccessContent() {
 
   const handleWindowsDownload = () => {
     const link = document.createElement('a');
-    link.href = downloadLinks.win;
+    link.href = WIN_DOWNLOAD_URL;
     link.setAttribute('download', '');
     document.body.appendChild(link);
     link.click();
@@ -223,27 +213,16 @@ function SuccessContent() {
                   Get the PosturePal app for your operating system.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <a
-                    href={downloadLinks.mac}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="neo-btn"
-                    style={{ background: 'var(--white)', textAlign: 'center', textDecoration: 'none', color: 'var(--black)', padding: '12px', display: 'block' }}
-                  >
-                    {os === 'mac' ? '★ Download for Mac' : 'Download for Mac'}
-                  </a>
                   <button
                     onClick={handleWindowsDownload}
                     className="neo-btn"
                     style={{ background: 'var(--white)', textAlign: 'center', color: 'var(--black)', padding: '12px', display: 'block', width: '100%', cursor: 'pointer' }}
                   >
-                    {os === 'win' ? '★ Download for Windows' : 'Download for Windows'}
+                    Download for Windows
                   </button>
-                  {os === 'win' && (
-                    <p style={{ fontSize: '11px', color: 'var(--black)', textAlign: 'center', fontWeight: 600, marginTop: '4px' }}>
-                      ↓ See the install guide below
-                    </p>
-                  )}
+                  <p style={{ fontSize: '11px', color: 'var(--black)', textAlign: 'center', fontWeight: 600, marginTop: '4px' }}>
+                    ↓ See the install guide below
+                  </p>
                 </div>
               </div>
 
@@ -270,22 +249,6 @@ function SuccessContent() {
                   The group chat is watching 👁️
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* MAC GATEKEEPER NOTE */}
-          <div className="scroll-fade" style={{ marginBottom: '32px' }}>
-            <div style={{
-              background: 'var(--white)', border: '2px solid var(--black)',
-              boxShadow: '6px 6px 0 var(--black)', padding: '28px'
-            }}>
-              <div className="neo-tag" style={{ background: 'var(--accent)', marginBottom: '12px' }}>
-                MAC USERS
-              </div>
-              <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>🍎 First-launch on macOS</h3>
-              <p style={{ color: 'var(--muted)', fontSize: '15px', lineHeight: 1.7, margin: 0 }}>
-                The first time you open PosturePal on a Mac, macOS Gatekeeper may say "PosturePal cannot be opened because the developer cannot be verified." This is normal for indie apps without an Apple Developer signature. <strong style={{ color: 'var(--black)' }}>Right-click the PosturePal app in your Applications folder → choose <em>Open</em> → click <em>Open</em> in the dialog.</strong> You only need to do this once.
-              </p>
             </div>
           </div>
 
