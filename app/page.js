@@ -725,7 +725,7 @@ export default function Home() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
             <div style={{ fontWeight: 700, fontSize: '16px' }}>PosturePal</div>
             <div style={{ display: 'flex', gap: '24px', fontSize: '14px' }}>
-              <a href="#benefits" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Benefits</a>
+              <a href="#benefits" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Problem</a>
               <a href="#features-demo" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Features</a>
               <a href="#how-it-works" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>How it works</a>
               <a href="#pricing-card" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Buy</a>
