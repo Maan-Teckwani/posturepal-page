@@ -157,48 +157,59 @@ function SuccessContent() {
         </div>
       </nav>
 
-      <section style={{ padding: '80px 24px 60px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <section style={{ padding: '48px 24px 60px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ maxWidth: '800px', width: '100%' }}>
 
           {/* HERO */}
-          <div className="scroll-fade" style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div className="scroll-fade" style={{ textAlign: 'center', marginBottom: '28px' }}>
             <div className="neo-tag" style={{ background: '#d4f57a', display: 'inline-block' }}>PAYMENT SUCCESSFUL</div>
-            <h1 style={{ fontSize: '64px', margin: '20px 0', lineHeight: 1.1 }}>The group chat is at peace.</h1>
-            <p style={{ fontSize: '20px', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto' }}>
-              Your spine thanks you. Copy your license key below.
+            <h1 style={{ fontSize: '52px', margin: '16px 0 12px', lineHeight: 1.1 }}>You're all set.</h1>
+            <p style={{ fontSize: '18px', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto' }}>
+              Your spine thanks you. Copy your license key and download the app below.
             </p>
           </div>
 
           {/* LICENSE KEY CARD */}
-          <div className="neo-card scroll-fade" style={{ background: 'var(--white)', marginBottom: '48px', padding: '40px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '22px', marginBottom: '8px' }}>Your License Key</h2>
-            <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '24px' }}>
-              This key activates PosturePal on up to 2 devices.
+          <div className="neo-card scroll-fade" style={{ background: 'var(--white)', marginBottom: '40px', padding: '28px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '20px', marginBottom: '6px' }}>Your License Key</h2>
+            <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '16px' }}>
+              Activates PosturePal on up to 2 devices. Keep it safe.
             </p>
             <div style={{
               background: '#d4f57a', border: '2px solid var(--black)',
-              padding: '24px 20px', fontSize: '28px', letterSpacing: '8px',
+              padding: '16px 16px', fontSize: '20px', letterSpacing: '4px',
               textAlign: 'center', fontFamily: 'monospace', fontWeight: 700,
-              marginBottom: '16px', userSelect: 'all'
+              marginBottom: '14px', userSelect: 'all'
             }}>
               {licenseKey}
             </div>
-            <button
-              onClick={handleCopy}
-              className="neo-btn"
-              style={{
-                background: copied ? '#d4f57a' : 'var(--black)',
-                color: copied ? 'var(--black)' : 'var(--white)',
-                border: '2px solid var(--black)',
-                padding: '12px 32px', fontSize: '14px', fontWeight: 700,
-                cursor: 'pointer', transition: 'background 0.2s, color 0.2s'
-              }}
-            >
-              {copied ? '✓ Copied!' : 'Copy License Key'}
-            </button>
-            <p style={{ fontSize: '13px', color: 'var(--muted)', marginTop: '16px' }}>
-              Keep this key safe — you'll need it to activate the app.
-            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={handleCopy}
+                className="neo-btn"
+                style={{
+                  background: copied ? '#d4f57a' : 'var(--black)',
+                  color: copied ? 'var(--black)' : 'var(--white)',
+                  border: '2px solid var(--black)',
+                  padding: '12px 28px', fontSize: '14px', fontWeight: 700,
+                  cursor: 'pointer', transition: 'background 0.2s, color 0.2s'
+                }}
+              >
+                {copied ? '✓ Copied!' : 'Copy License Key'}
+              </button>
+              <button
+                onClick={handleWindowsDownload}
+                className="neo-btn"
+                style={{
+                  background: 'var(--accent)', color: 'var(--black)',
+                  border: '2px solid var(--black)',
+                  padding: '12px 28px', fontSize: '14px', fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Download for Windows
+              </button>
+            </div>
           </div>
 
           {/* NEXT STEPS */}
@@ -246,7 +257,7 @@ function SuccessContent() {
                   Sit up straight for 3 seconds. The AI learns your baseline. Then let it run in the background.
                 </p>
                 <div style={{ color: '#ef4444', fontWeight: 700, fontSize: '14px', marginTop: '24px' }}>
-                  The group chat is watching 👁️
+                  Your posture guardian is live 👁️
                 </div>
               </div>
             </div>
