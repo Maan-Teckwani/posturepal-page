@@ -270,7 +270,7 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
             if (!verifyData.success) throw new Error(verifyData.message || 'Payment verification failed.');
             const genRes = await fetch('/api/generate-license', {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ payment_id: response.razorpay_payment_id, email })
+              body: JSON.stringify({ payment_id: response.razorpay_payment_id, email, first_name: firstName, last_name: lastName })
             });
             if (!genRes.ok) throw new Error('License generation failed. Your key will be emailed to you.');
             const genData = await genRes.json();
@@ -333,18 +333,18 @@ export default function Home() {
             <img src="/Logo.png" alt="PosturePal logo" style={{ width: '75px', height: '75px', objectFit: 'contain' }} />
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ fontWeight: 700, fontSize: '18px', lineHeight: 1.1 }}>PosturePal</div>
-              <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px', letterSpacing: '0.02em' }}>your spine's intervention app</div>
+              <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px', letterSpacing: '0.02em' }}>AI powered posture detection</div>
             </div>
           </a>
           <div className="nav-links" style={{ display: 'flex', gap: '32px', fontSize: '14px', fontWeight: 500 }}>
             <a href="#benefits" style={{ textDecoration: 'none', color: 'var(--black)' }}>Benefits</a>
             <a href="#features-demo" style={{ textDecoration: 'none', color: 'var(--black)' }}>Features</a>
             <a href="#how-it-works" style={{ textDecoration: 'none', color: 'var(--black)' }}>How it works</a>
-            <a href="#pricing" style={{ textDecoration: 'none', color: 'var(--black)' }}>Buy</a>
+            <a href="#pricing-card" style={{ textDecoration: 'none', color: 'var(--black)' }}>Buy</a>
             <a href="#faq" style={{ textDecoration: 'none', color: 'var(--black)' }}>FAQ</a>
           </div>
           <div className="nav-links">
-            <a href="#pricing" className="neo-btn" style={{ fontSize: '13px', padding: '10px 20px', background: 'var(--accent)', color: 'var(--black)' }}>
+            <a href="#pricing-card" className="neo-btn" style={{ fontSize: '13px', padding: '10px 20px', background: 'var(--accent)', color: 'var(--black)' }}>
               Buy Now — Rs. {PRICE}
             </a>
           </div>
@@ -613,7 +613,7 @@ export default function Home() {
                     ))}
                   </div>
                   {col.accent && (
-                    <a href="#pricing" className="neo-btn" style={{ marginTop: 'auto', display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+                    <a href="#pricing-card" className="neo-btn" style={{ marginTop: 'auto', display: 'block', textAlign: 'center', textDecoration: 'none' }}>
                       Get PosturePal →
                     </a>
                   )}
@@ -703,7 +703,7 @@ export default function Home() {
             <h2 style={{ fontSize: '64px', color: 'white', marginBottom: '32px' }}>Stop hurting. Start sitting right.</h2>
           </Reveal>
           <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
-            <a href="#pricing" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
+            <a href="#pricing-card" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
               Buy Now — Rs. {PRICE}
             </a>
           </div>
@@ -717,7 +717,7 @@ export default function Home() {
               <a href="#benefits" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Benefits</a>
               <a href="#features-demo" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Features</a>
               <a href="#how-it-works" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>How it works</a>
-              <a href="#pricing" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Buy</a>
+              <a href="#pricing-card" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Buy</a>
               <a href="#faq" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>FAQ</a>
             </div>
             <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>© 2026 PosturePal</div>

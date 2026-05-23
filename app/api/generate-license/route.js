@@ -18,13 +18,16 @@ function generateSessionToken(paymentId, secret) {
 
 export async function POST(req) {
   try {
-    const { payment_id, email } = await req.json();
+    const { payment_id, email, first_name, last_name } = await req.json();
 
     if (!payment_id || !email) {
       return new Response(JSON.stringify({ success: false, error: 'Missing payment_id or email' }), {
         status: 400, headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    const firstName = String(first_name || '').trim();
+    const lastName = String(last_name || '').trim();
 
     const { data: existing } = await supabase
       .from('licenses')
@@ -62,6 +65,16 @@ export async function POST(req) {
       });
     }
 
+    if (firstName && lastName) {
+      const { error: customerError } = await supabase.from('customers').upsert(
+        { first_name: firstName, last_name: lastName, email, created_at: new Date().toISOString() },
+        { onConflict: 'email' }
+      );
+      if (customerError) {
+        console.error('Supabase customer upsert error:', customerError);
+      }
+    }
+
     const downloadMac = process.env.DOWNLOAD_URL_MAC || 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal.dmg';
     const downloadWin = process.env.DOWNLOAD_URL_WIN || 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal-Setup.exe';
 
@@ -83,6 +96,10 @@ export async function POST(req) {
               <a href="${downloadMac}" style="display: block; background: #000; color: #fff; text-decoration: none; padding: 14px 20px; text-align: center; font-weight: 700;">Download for Mac</a>
               <a href="${downloadWin}" style="display: block; background: #000; color: #fff; text-decoration: none; padding: 14px 20px; text-align: center; font-weight: 700;">Download for Windows</a>
             </div>
+            <p style="font-weight: 700; margin: 24px 0 8px;">🍎 Mac users — first launch</p>
+            <p style="font-size: 14px; color: #555555; margin: 0 0 20px; line-height: 1.6;">
+              macOS may say PosturePal "cannot be opened because the developer cannot be verified." This is normal for indie apps. Right-click the PosturePal app in Applications → choose <strong>Open</strong> → click <strong>Open</strong> in the dialog. You only need to do this once.
+            </p>
             <p style="font-size: 14px; color: #666666; margin: 0;">Need help? Reply to this email and our support team will assist you.</p>
           </div>
           <p style="font-size: 12px; color: #888888; text-align: center; margin-top: 22px;">PosturePal © 2026</p>

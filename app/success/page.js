@@ -273,6 +273,22 @@ function SuccessContent() {
             </div>
           </div>
 
+          {/* MAC GATEKEEPER NOTE */}
+          <div className="scroll-fade" style={{ marginBottom: '32px' }}>
+            <div style={{
+              background: 'var(--white)', border: '2px solid var(--black)',
+              boxShadow: '6px 6px 0 var(--black)', padding: '28px'
+            }}>
+              <div className="neo-tag" style={{ background: 'var(--accent)', marginBottom: '12px' }}>
+                MAC USERS
+              </div>
+              <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>🍎 First-launch on macOS</h3>
+              <p style={{ color: 'var(--muted)', fontSize: '15px', lineHeight: 1.7, margin: 0 }}>
+                The first time you open PosturePal on a Mac, macOS Gatekeeper may say "PosturePal cannot be opened because the developer cannot be verified." This is normal for indie apps without an Apple Developer signature. <strong style={{ color: 'var(--black)' }}>Right-click the PosturePal app in your Applications folder → choose <em>Open</em> → click <em>Open</em> in the dialog.</strong> You only need to do this once.
+              </p>
+            </div>
+          </div>
+
           {/* SMARTSCREEN SECURITY SECTION */}
           <div ref={smartscreenRef} id="smartscreen-guide" style={{ scrollMarginTop: '80px' }}>
 

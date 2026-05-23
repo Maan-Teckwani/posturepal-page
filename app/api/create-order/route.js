@@ -1,7 +1,5 @@
 import Razorpay from 'razorpay';
-import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET
@@ -28,18 +26,12 @@ export async function POST(req) {
       });
     }
 
-    await supabase.from('customers').insert({
-      first_name: firstName,
-      last_name: lastName,
-      email,
-      created_at: new Date().toISOString()
-    });
-
     const order = await razorpay.orders.create({
       amount,
       currency: 'INR',
       receipt: `receipt_${Date.now()}`,
-      payment_capture: 1
+      payment_capture: 1,
+      notes: { first_name: firstName, last_name: lastName, email }
     });
 
     return new Response(JSON.stringify({
