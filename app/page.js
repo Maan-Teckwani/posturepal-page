@@ -337,8 +337,8 @@ export default function Home() {
             </div>
           </a>
           <div className="nav-links" style={{ display: 'flex', gap: '32px', fontSize: '14px', fontWeight: 500 }}>
-            <a href="#benefits" style={{ textDecoration: 'none', color: 'var(--black)' }}>Benefits</a>
-            <a href="#features-demo" style={{ textDecoration: 'none', color: 'var(--black)' }}>Features</a>
+            <a href="#benefits" style={{ textDecoration: 'none', color: 'var(--black)' }}>Problem</a>
+            <a href="#features-demo" style={{ textDecoration: 'none', color: 'var(--black)' }}>Our Solution</a>
             <a href="#how-it-works" style={{ textDecoration: 'none', color: 'var(--black)' }}>How it works</a>
             <a href="#pricing-card" style={{ textDecoration: 'none', color: 'var(--black)' }}>Buy</a>
             <a href="#faq" style={{ textDecoration: 'none', color: 'var(--black)' }}>FAQ</a>
@@ -726,7 +726,7 @@ export default function Home() {
             <div style={{ fontWeight: 700, fontSize: '16px' }}>PosturePal</div>
             <div style={{ display: 'flex', gap: '24px', fontSize: '14px' }}>
               <a href="#benefits" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Problem</a>
-              <a href="#features-demo" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Features</a>
+              <a href="#features-demo" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Our Solution</a>
               <a href="#how-it-works" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>How it works</a>
               <a href="#pricing-card" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Buy</a>
               <a href="#faq" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>FAQ</a>
