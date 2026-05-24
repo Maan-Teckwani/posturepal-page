@@ -394,7 +394,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
             style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto 32px', lineHeight: 1.75, fontWeight: 500 }}
           >
-            For Windows. Mac & Linux coming soon.
+            Available for Windows. Mac & Linux coming soon.
           </motion.p>
 
           <motion.div
