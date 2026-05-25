@@ -321,6 +321,92 @@ const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}` }) => {
   );
 };
 
+const TrialSignupModal = ({ onSubmit, onClose, loading }) => {
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '' });
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { firstName, lastName, email } = form;
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) { setError('All fields are required.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Please enter a valid email address.'); return; }
+    setError('');
+    onSubmit(form);
+  };
+
+  const field = (label, key, type, placeholder) => (
+    <div style={{ marginBottom: '16px' }}>
+      <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', marginBottom: '6px' }}>{label}</label>
+      <input
+        type={type} value={form[key]}
+        onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+        placeholder={placeholder}
+        style={{ width: '100%', padding: '12px', border: '2px solid var(--black)', background: 'var(--white)', fontFamily: 'Space Grotesk, sans-serif', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
+      />
+    </div>
+  );
+
+  return (
+    <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ background: 'var(--cream)', border: '2px solid var(--black)', boxShadow: '8px 8px 0 var(--black)', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1 }}>×</button>
+        <div className="neo-tag" style={{ background: '#d4f57a', marginBottom: '12px' }}>5-DAY FREE TRIAL</div>
+        <h2 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '28px', marginBottom: '6px' }}>Start your trial.</h2>
+        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>No credit card required. Full access for 5 days.</p>
+        <form onSubmit={handleSubmit}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>{field('First Name', 'firstName', 'text', 'Jane')}</div>
+            <div>{field('Last Name', 'lastName', 'text', 'Doe')}</div>
+          </div>
+          {field('Email', 'email', 'email', 'jane@example.com')}
+          {error && <div style={{ color: '#b91c1c', fontSize: '13px', marginBottom: '14px', marginTop: '-4px' }}>{error}</div>}
+          <button type="submit" disabled={loading} className="neo-btn accent" style={{ width: '100%', fontSize: '15px', padding: '14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+            {loading ? 'Starting trial...' : 'Start Free Trial →'}
+          </button>
+          <p style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', marginTop: '12px' }}>Timer starts when you launch the app (within 24h of signup).</p>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const TrialButton = ({ buttonText = 'Start Free Trial', variant = 'accent', style = {} }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async ({ firstName, lastName, email }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/create-trial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ first_name: firstName, last_name: lastName, email }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || 'Could not start trial.');
+      }
+      window.location.href = `/download?trial_key=${encodeURIComponent(data.trial_key)}`;
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || 'Could not start trial.');
+    }
+  };
+
+  const btnClass = variant === 'accent' ? 'neo-btn accent' : 'neo-btn';
+  return (
+    <>
+      {showModal && <TrialSignupModal onSubmit={handleSubmit} onClose={() => { setShowModal(false); setLoading(false); }} loading={loading} />}
+      <button onClick={() => { setError(null); setShowModal(true); }} className={btnClass} style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', cursor: 'pointer', ...style }}>
+        {buttonText}
+      </button>
+      {error && <div style={{ marginTop: '12px', color: '#b91c1c', fontSize: '14px', maxWidth: '420px' }}>{error}</div>}
+    </>
+  );
+};
+
 export default function Home() {
   const [openFaq, setOpenFaq] = useState(null);
 
@@ -343,9 +429,12 @@ export default function Home() {
             <a href="#pricing-card" style={{ textDecoration: 'none', color: 'var(--black)' }}>Buy</a>
             <a href="#faq" style={{ textDecoration: 'none', color: 'var(--black)' }}>FAQ</a>
           </div>
-          <div className="nav-links">
-            <a href="#pricing-card" className="neo-btn" style={{ fontSize: '13px', padding: '10px 20px', background: 'var(--accent)', color: 'var(--black)' }}>
-              Buy Now — Rs. {PRICE}
+          <div className="nav-links" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <a href="#pricing-card" className="neo-btn" style={{ fontSize: '13px', padding: '10px 18px', background: 'var(--white)', color: 'var(--black)' }}>
+              Buy Lifetime — Rs. {PRICE}
+            </a>
+            <a href="#pricing-card" className="neo-btn" style={{ fontSize: '13px', padding: '10px 18px', background: 'var(--accent)', color: 'var(--black)' }}>
+              Start Free Trial
             </a>
           </div>
         </div>
@@ -401,10 +490,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.34, ease: [0.16, 1, 0.3, 1] }}
-            style={{ display: 'flex', justifyContent: 'center' }}
+            style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}
           >
-            <a href="#pricing-card" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', textDecoration: 'none' }}>
-              Get PosturePal →
+            <TrialButton buttonText="Start Free Trial — 5 days" />
+            <a href="#pricing-card" className="neo-btn" style={{ fontSize: '16px', padding: '16px 32px', textDecoration: 'none', background: 'var(--white)', color: 'var(--black)' }}>
+              Buy Lifetime — Rs. {PRICE}
             </a>
           </motion.div>
         </div>
@@ -635,38 +725,67 @@ export default function Home() {
       {/* PRICING */}
       <section id="pricing" className="bg-white" style={{ textAlign: 'center' }}>
         <div className="container">
-          <div className="neo-tag">BUY NOW</div>
+          <div className="neo-tag">TRY FREE OR BUY ONCE</div>
           <Reveal variant="scaleBlur">
-            <h2 style={{ fontSize: '52px', marginBottom: '16px' }}>One payment. Lifetime access.</h2>
+            <h2 style={{ fontSize: '52px', marginBottom: '16px' }}>Build the habit. Then keep it forever.</h2>
           </Reveal>
-          <p style={{ color: 'var(--muted)', marginBottom: '48px', maxWidth: '480px', margin: '0 auto 48px auto' }}>
-            No subscription. No recurring fees. License key shown instantly after payment.
+          <p style={{ color: 'var(--muted)', marginBottom: '48px', maxWidth: '520px', margin: '0 auto 48px auto' }}>
+            Start with a 5-day free trial. No card required. Love it? Pay once for lifetime access.
           </p>
-          <Reveal variant="fadeUp">
-            <div id="pricing-card" className="neo-card" style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '48px', textAlign: 'center', scrollMarginTop: '80px' }}>
-              <p style={{ fontSize: '16px', color: 'var(--black)', fontWeight: 700, margin: '12px 0 24px' }}>Lifetime License — Rs. {PRICE}</p>
-              <div style={{ textAlign: 'left', margin: '0 auto 32px', maxWidth: '280px' }}>
-                {[
-                  '✓ Lifetime license — not a subscription',
-                  '✓ 2 devices',
-                  '✓ 100% offline AI',
-                  '✓ Webcam footage stays on your device',
-                  '✓ License key shown instantly',
-                ].map((feature, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.15)', fontSize: '15px' }}>
-                    {feature}
-                  </div>
-                ))}
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 0', marginTop: '4px', fontSize: '15px', fontWeight: 600 }}>
-                  Get for Windows — Mac & Linux coming soon
+          <div id="pricing-card" style={{ scrollMarginTop: '80px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', maxWidth: '900px', margin: '0 auto', alignItems: 'stretch' }}>
+            <Reveal variant="fadeUp">
+              <div className="neo-card" style={{ background: 'var(--white)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '40px', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <div className="neo-tag" style={{ background: '#d4f57a', marginBottom: '16px', alignSelf: 'center' }}>FREE TRIAL</div>
+                <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '32px', marginBottom: '6px' }}>5 days, on us.</h3>
+                <p style={{ fontSize: '14px', color: 'var(--muted)', marginBottom: '24px' }}>No credit card. Full access.</p>
+                <div style={{ textAlign: 'left', margin: '0 auto 28px', maxWidth: '280px', flex: 1 }}>
+                  {[
+                    '✓ Full posture detection',
+                    '✓ Alerts & analytics',
+                    '✓ Works fully offline',
+                    '✓ Build the habit in 5 days',
+                    '✓ Upgrade anytime',
+                  ].map((feature, i) => (
+                    <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.12)', fontSize: '15px' }}>
+                      {feature}
+                    </div>
+                  ))}
                 </div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <TrialButton buttonText="Start Free Trial →" />
+                </div>
+                <p style={{ marginTop: '14px', fontSize: '12px', color: 'var(--muted)' }}>Timer starts when you launch the app.</p>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <RazorpayButton buttonText={`Pay Rs. ${PRICE} →`} />
+            </Reveal>
+
+            <Reveal variant="fadeUp" delay={0.08}>
+              <div className="neo-card" style={{ background: 'var(--accent)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '40px', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <div className="neo-tag" style={{ background: 'var(--black)', color: 'var(--accent)', marginBottom: '16px', alignSelf: 'center' }}>LIFETIME</div>
+                <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '32px', marginBottom: '6px' }}>One payment. Forever.</h3>
+                <p style={{ fontSize: '14px', color: 'var(--black)', fontWeight: 600, marginBottom: '24px' }}>Rs. {PRICE} — no subscription</p>
+                <div style={{ textAlign: 'left', margin: '0 auto 28px', maxWidth: '280px', flex: 1 }}>
+                  {[
+                    '✓ Lifetime license',
+                    '✓ 2 devices',
+                    '✓ 100% offline AI',
+                    '✓ Webcam stays on your device',
+                    '✓ License key shown instantly',
+                  ].map((feature, i) => (
+                    <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.15)', fontSize: '15px' }}>
+                      {feature}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <RazorpayButton buttonText={`Pay Rs. ${PRICE} →`} />
+                </div>
+                <p style={{ marginTop: '14px', fontSize: '12px', color: 'var(--muted)' }}>Secure payment via Razorpay.</p>
               </div>
-              <p style={{ marginTop: '20px', fontSize: '13px', color: 'var(--muted)' }}>Secure payment via Razorpay.</p>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
+          <p style={{ color: 'var(--muted)', marginTop: '32px', fontSize: '14px' }}>
+            Available for Windows. Mac & Linux coming soon.
+          </p>
         </div>
       </section>
 
@@ -680,11 +799,12 @@ export default function Home() {
           <Reveal variant="fadeUp">
             <div>
               {[
-                { q: "Is it available now?", a: "Yes. Buy it, download it, done." },
+                { q: "How does the free trial work?", a: "Sign up with your name and email, download PosturePal for Windows, and click the launch link. You get 5 days of full access — no credit card required. The trial timer starts when you launch the app (within 24 hours of signing up). After 5 days, you can keep using PosturePal forever by paying Rs. 299 once." },
+                { q: "Is it available now?", a: "Yes. Start the free trial, or buy a lifetime license. Both download links are sent immediately." },
                 { q: "Does my webcam footage get sent anywhere?", a: "No. All processing is on-device. Nothing leaves your machine." },
                 { q: "Does it work on Mac, Windows, and Linux?", a: "Currently available on Windows. Mac and Linux versions are coming soon." },
                 { q: "What if I wear glasses or have a beard?", a: "PosturePal tracks skeletal points — shoulders, ears, nose — not your face. Glasses and beards are irrelevant." },
-                { q: "Can I use it on two computers?", a: "Yes. Your license covers 2 devices." },
+                { q: "Can I use it on two computers?", a: "Yes. A paid license covers 2 devices. A free trial is tied to one device." },
                 { q: "Is this a subscription?", a: "No. One payment, lifetime access." },
               ].map((faq, i) => (
                 <div key={i} style={{ border: '2px solid black', marginBottom: '-2px', position: 'relative' }}>
@@ -713,13 +833,16 @@ export default function Home() {
           <Reveal variant="scaleBlur">
             <h2 style={{ fontSize: '64px', color: 'white', marginBottom: '32px' }}>Stop hurting. Start sitting right.</h2>
           </Reveal>
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', margin: '40px 0', flexWrap: 'wrap' }}>
             <a href="#pricing-card" className="neo-btn accent" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>
-              Buy Now — Rs. {PRICE}
+              Start Free Trial
+            </a>
+            <a href="#pricing-card" className="neo-btn" style={{ fontSize: '16px', padding: '16px 32px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none', background: 'var(--white)', color: 'var(--black)' }}>
+              Buy Lifetime — Rs. {PRICE}
             </a>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '16px', fontSize: '14px' }}>
-            One payment. Lifetime access. Works offline.
+            5 days free. Lifetime for Rs. {PRICE}. No subscription. Works offline.
           </p>
           <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: '60px 0 40px' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
