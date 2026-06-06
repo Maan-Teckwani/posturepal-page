@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-
-const WIN_DOWNLOAD_URL =
-  process.env.NEXT_PUBLIC_DOWNLOAD_URL_WIN ||
-  'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal-Setup.exe';
+import DownloadHub from '../_components/DownloadHub';
 
 function DownloadContent() {
   const searchParams = useSearchParams();
@@ -22,15 +19,6 @@ function DownloadContent() {
   const handleCopy = () => {
     if (!trialKey) return;
     navigator.clipboard.writeText(trialKey).then(() => setCopied(true)).catch(() => {});
-  };
-
-  const handleWindowsDownload = () => {
-    const link = document.createElement('a');
-    link.href = WIN_DOWNLOAD_URL;
-    link.setAttribute('download', '');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   if (!trialKey) {
@@ -73,11 +61,11 @@ function DownloadContent() {
       </nav>
 
       <section style={{ padding: '48px 24px 60px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ maxWidth: '760px', width: '100%' }}>
+        <div style={{ maxWidth: '720px', width: '100%' }}>
 
           {/* HERO */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div className="neo-tag" style={{ background: '#d4f57a', display: 'inline-block' }}>YOUR FREE TRIAL KEY IS READY</div>
+            <div className="neo-tag" style={{ background: 'var(--accent)', display: 'inline-block' }}>YOUR FREE TRIAL KEY IS READY</div>
             <h1 style={{ fontSize: '48px', margin: '14px 0 12px', lineHeight: 1.1 }}>Download PosturePal & paste your key.</h1>
             <p style={{ fontSize: '17px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto' }}>
               Your 5-day trial timer starts the moment you activate the key inside the app.
@@ -91,7 +79,7 @@ function DownloadContent() {
               Copy this. You'll paste it into PosturePal after installing.
             </p>
             <div style={{
-              background: '#d4f57a', border: '2px solid var(--black)',
+              background: 'var(--accent)', border: '2px solid var(--black)',
               padding: '18px 16px', fontSize: '22px', letterSpacing: '4px',
               textAlign: 'center', fontFamily: 'monospace', fontWeight: 700,
               marginBottom: '14px', userSelect: 'all'
@@ -102,7 +90,7 @@ function DownloadContent() {
               onClick={handleCopy}
               className="neo-btn"
               style={{
-                background: copied ? '#d4f57a' : 'var(--black)',
+                background: copied ? 'var(--accent)' : 'var(--black)',
                 color: copied ? 'var(--black)' : 'var(--white)',
                 border: '2px solid var(--black)',
                 padding: '12px 28px', fontSize: '14px', fontWeight: 700,
@@ -113,69 +101,39 @@ function DownloadContent() {
             </button>
           </div>
 
-          {/* STEPS */}
-          <div className="neo-card" style={{ background: 'var(--white)', padding: '36px', marginBottom: '36px' }}>
-            {/* STEP 1 */}
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginBottom: '32px' }}>
-              <div style={{ background: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0 }}>1</div>
-              <div style={{ flex: 1 }}>
-                <h2 style={{ fontSize: '22px', marginBottom: '8px' }}>Download for Windows</h2>
-                <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '16px', lineHeight: 1.6 }}>
-                  Mac & Linux coming soon. Currently Windows only.
-                </p>
-                <button onClick={handleWindowsDownload} className="neo-btn accent" style={{ fontSize: '16px', padding: '14px 28px', cursor: 'pointer' }}>
-                  ⬇  Download PosturePal-Setup.exe
-                </button>
-              </div>
-            </div>
-
-            <div style={{ height: '2px', background: 'var(--black)', opacity: 0.1, marginBottom: '32px' }} />
-
-            {/* STEP 2 */}
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginBottom: '32px' }}>
-              <div style={{ background: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--black)', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0 }}>2</div>
-              <div style={{ flex: 1 }}>
-                <h2 style={{ fontSize: '22px', marginBottom: '8px' }}>Install the app</h2>
-                <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '12px', lineHeight: 1.7 }}>
-                  Run <strong>PosturePal-Setup.exe</strong> once it finishes downloading. Windows may show a blue <em>"Windows protected your PC"</em> screen — that's expected for indie apps. See the safe install guide below if you need it.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ height: '2px', background: 'var(--black)', opacity: 0.1, marginBottom: '32px' }} />
-
-            {/* STEP 3 */}
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-              <div style={{ background: 'var(--black)', color: 'var(--accent)', border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--accent)', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0 }}>3</div>
-              <div style={{ flex: 1 }}>
-                <h2 style={{ fontSize: '22px', marginBottom: '8px' }}>Open PosturePal & paste your trial key</h2>
-                <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '8px', lineHeight: 1.7 }}>
-                  Launch the app from your Start Menu or desktop shortcut. On the activation screen, paste the trial key from the card above. Your 5-day free trial starts immediately and you'll see the remaining days on the dashboard.
-                </p>
-              </div>
-            </div>
+          {/* SECTION HEADING */}
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '28px', marginBottom: '6px' }}>Download the app</h2>
+            <p style={{ color: 'var(--muted)', fontSize: '14px', margin: 0 }}>
+              We've picked your platform automatically — switch tabs if it's wrong.
+            </p>
           </div>
 
-          {/* SMARTSCREEN GUIDE — TEXT ONLY */}
-          <div style={{ background: 'var(--black)', border: '2px solid var(--black)', boxShadow: '8px 8px 0 var(--accent)', padding: '36px', marginBottom: '24px' }}>
-            <div className="neo-tag" style={{ background: 'var(--accent)', marginBottom: '16px' }}>WINDOWS SAFE-INSTALL GUIDE</div>
-            <h2 style={{ fontSize: '24px', color: 'var(--white)', marginBottom: '14px' }}>
-              About the "Windows protected your PC" warning
-            </h2>
-            <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '15px', lineHeight: 1.7, marginBottom: '24px' }}>
-              PosturePal is a small, independent app. Because we haven't yet purchased an expensive code-signing certificate, Windows SmartScreen may flag the installer as coming from an "Unknown publisher" on first run. This is purely a missing-certificate warning — <strong style={{ color: 'var(--accent)' }}>PosturePal is safe to install</strong>, runs 100% on-device, and never sends your webcam or any personal data anywhere.
-            </p>
-            <h3 style={{ fontSize: '16px', color: 'var(--accent)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>To install safely:</h3>
-            <ol style={{ color: 'rgba(255,255,255,0.9)', fontSize: '15px', lineHeight: 1.9, paddingLeft: '22px', marginBottom: '24px' }}>
-              <li>Double-click <strong>PosturePal-Setup.exe</strong> after it downloads.</li>
-              <li>If a blue <em>"Windows protected your PC"</em> screen appears, click the small <strong style={{ color: 'var(--accent)' }}>More info</strong> link near the top of the dialog.</li>
-              <li>A new <strong style={{ color: 'var(--accent)' }}>Run anyway</strong> button will appear at the bottom — click it.</li>
-              <li>Follow the standard installer prompts (choose where to install, click Next, Install, Finish).</li>
-              <li>Open PosturePal from your Start Menu and paste your trial key.</li>
-            </ol>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: 0, lineHeight: 1.6 }}>
-              Still unsure? Email <a href="mailto:support@posturepal.io" style={{ color: 'var(--accent)' }}>support@posturepal.io</a> — we're happy to walk you through it.
-            </p>
+          {/* DOWNLOAD HUB (Windows / Mac tabs + install guide) */}
+          <div style={{ marginBottom: '36px' }}>
+            <DownloadHub />
+          </div>
+
+          {/* AFTER-INSTALL REMINDER */}
+          <div
+            className="neo-card"
+            style={{ background: 'var(--white)', padding: '24px 28px', display: 'flex', gap: '18px', alignItems: 'flex-start' }}
+          >
+            <div style={{
+              background: 'var(--black)', color: 'var(--accent)',
+              border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--accent)',
+              width: '44px', height: '44px', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0,
+            }}>
+              →
+            </div>
+            <div>
+              <h3 style={{ fontSize: '18px', marginBottom: '6px' }}>After installing, paste your trial key</h3>
+              <p style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 1.65, margin: 0 }}>
+                Launch PosturePal, allow camera access, and paste the trial key shown above on the activation screen.
+                Your 5-day trial starts immediately.
+              </p>
+            </div>
           </div>
 
         </div>

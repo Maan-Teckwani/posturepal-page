@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-
-const WIN_DOWNLOAD_URL = process.env.NEXT_PUBLIC_DOWNLOAD_URL_WIN || 'https://github.com/Maan-Teckwani/posturepal-releases/releases/latest/download/PosturePal-Setup.exe';
+import DownloadHub from '../_components/DownloadHub';
 
 function UnauthorizedPage({ message }) {
   return (
@@ -57,7 +56,7 @@ function SuccessContent() {
   const [licenseKey, setLicenseKey] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [copied, setCopied] = useState(false);
-  const smartscreenRef = useRef(null);
+  const downloadRef = useRef(null);
 
   useEffect(() => {
     if (!token) {
@@ -115,16 +114,8 @@ function SuccessContent() {
     });
   };
 
-  const handleWindowsDownload = () => {
-    const link = document.createElement('a');
-    link.href = WIN_DOWNLOAD_URL;
-    link.setAttribute('download', '');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => {
-      smartscreenRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 250);
+  const scrollToDownload = () => {
+    downloadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   if (pageStatus === 'loading') {
@@ -158,14 +149,14 @@ function SuccessContent() {
       </nav>
 
       <section style={{ padding: '48px 24px 60px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ maxWidth: '800px', width: '100%' }}>
+        <div style={{ maxWidth: '760px', width: '100%' }}>
 
           {/* HERO */}
           <div className="scroll-fade" style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <div className="neo-tag" style={{ background: '#d4f57a', display: 'inline-block' }}>PAYMENT SUCCESSFUL</div>
+            <div className="neo-tag" style={{ background: 'var(--accent)', display: 'inline-block' }}>PAYMENT SUCCESSFUL</div>
             <h1 style={{ fontSize: '52px', margin: '16px 0 12px', lineHeight: 1.1 }}>You're all set.</h1>
-            <p style={{ fontSize: '18px', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto' }}>
-              Your spine thanks you. Copy your license key and download the app below.
+            <p style={{ fontSize: '18px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto' }}>
+              Your spine thanks you. Copy your license key, then grab the app for your platform below.
             </p>
           </div>
 
@@ -176,7 +167,7 @@ function SuccessContent() {
               Activates PosturePal on up to 2 devices. Keep it safe.
             </p>
             <div style={{
-              background: '#d4f57a', border: '2px solid var(--black)',
+              background: 'var(--accent)', border: '2px solid var(--black)',
               padding: '16px 16px', fontSize: '20px', letterSpacing: '4px',
               textAlign: 'center', fontFamily: 'monospace', fontWeight: 700,
               marginBottom: '14px', userSelect: 'all'
@@ -188,7 +179,7 @@ function SuccessContent() {
                 onClick={handleCopy}
                 className="neo-btn"
                 style={{
-                  background: copied ? '#d4f57a' : 'var(--black)',
+                  background: copied ? 'var(--accent)' : 'var(--black)',
                   color: copied ? 'var(--black)' : 'var(--white)',
                   border: '2px solid var(--black)',
                   padding: '12px 28px', fontSize: '14px', fontWeight: 700,
@@ -198,154 +189,59 @@ function SuccessContent() {
                 {copied ? '✓ Copied!' : 'Copy License Key'}
               </button>
               <button
-                onClick={handleWindowsDownload}
-                className="neo-btn"
+                onClick={scrollToDownload}
+                className="neo-btn accent"
                 style={{
-                  background: 'var(--accent)', color: 'var(--black)',
-                  border: '2px solid var(--black)',
                   padding: '12px 28px', fontSize: '14px', fontWeight: 700,
                   cursor: 'pointer'
                 }}
               >
-                Download for Windows
+                ↓ Download the app
               </button>
             </div>
           </div>
 
-          {/* NEXT STEPS */}
-          <div className="scroll-fade" style={{ marginBottom: '64px' }}>
-            <h2 style={{ fontSize: '32px', marginBottom: '24px', textAlign: 'center' }}>Next Steps</h2>
-            <div className="grid-3">
-              {/* Download */}
-              <div className="neo-card" style={{ background: 'var(--accent)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '32px', marginBottom: '16px' }}>1️⃣</div>
-                <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Download</h3>
-                <p style={{ color: 'var(--black)', marginBottom: '24px', flex: 1 }}>
-                  Get the PosturePal app for your operating system.
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <button
-                    onClick={handleWindowsDownload}
-                    className="neo-btn"
-                    style={{ background: 'var(--white)', textAlign: 'center', color: 'var(--black)', padding: '12px', display: 'block', width: '100%', cursor: 'pointer' }}
-                  >
-                    Download for Windows
-                  </button>
-                  <p style={{ fontSize: '11px', color: 'var(--black)', textAlign: 'center', fontWeight: 600, marginTop: '4px' }}>
-                    ↓ See the install guide below
-                  </p>
-                </div>
-              </div>
+          {/* DOWNLOAD SECTION */}
+          <div ref={downloadRef} id="download" className="scroll-fade" style={{ scrollMarginTop: '80px', marginBottom: '48px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '32px', marginBottom: '6px' }}>Download the app</h2>
+              <p style={{ color: 'var(--muted)', fontSize: '14px', margin: 0 }}>
+                We've picked your platform automatically — switch tabs if it's wrong.
+              </p>
+            </div>
+            <DownloadHub />
+          </div>
 
+          {/* NEXT STEPS */}
+          <div className="scroll-fade" style={{ marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '28px', marginBottom: '20px', textAlign: 'center' }}>Then activate & calibrate</h2>
+            <div className="grid-2">
               {/* Activate */}
               <div className="neo-card" style={{ background: 'var(--white)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '32px', marginBottom: '16px' }}>2️⃣</div>
-                <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Activate</h3>
-                <p style={{ color: 'var(--muted)', flex: 1 }}>
-                  Open the app, grant camera permissions, and paste your license key when prompted.
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔑</div>
+                <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>1. Activate</h3>
+                <p style={{ color: 'var(--muted)', flex: 1, fontSize: '14px', lineHeight: 1.7 }}>
+                  Launch PosturePal, allow camera access, and paste your license key on the activation screen.
                 </p>
-                <div style={{ background: '#f5f5f5', border: '2px solid black', padding: '12px', textAlign: 'center', fontSize: '14px', fontWeight: 600, marginTop: '24px' }}>
-                  No account needed.
+                <div style={{ background: '#f5f5f5', border: '2px solid var(--black)', padding: '10px 12px', textAlign: 'center', fontSize: '13px', fontWeight: 700, marginTop: '18px' }}>
+                  No account needed
                 </div>
               </div>
 
               {/* Calibrate */}
               <div className="neo-card" style={{ background: 'var(--white)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '32px', marginBottom: '16px' }}>3️⃣</div>
-                <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Calibrate</h3>
-                <p style={{ color: 'var(--muted)', flex: 1 }}>
-                  Sit up straight for 3 seconds. The AI learns your baseline. Then let it run in the background.
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🎯</div>
+                <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>2. Calibrate</h3>
+                <p style={{ color: 'var(--muted)', flex: 1, fontSize: '14px', lineHeight: 1.7 }}>
+                  Sit up straight for 3 seconds — the AI learns your baseline. Then let it run quietly in the background.
                 </p>
-                <div style={{ color: '#ef4444', fontWeight: 700, fontSize: '14px', marginTop: '24px' }}>
+                <div style={{ color: '#ef4444', fontWeight: 700, fontSize: '13px', marginTop: '18px', textAlign: 'center' }}>
                   Your posture guardian is live 👁️
                 </div>
               </div>
             </div>
           </div>
 
-          {/* SMARTSCREEN SECURITY SECTION */}
-          <div ref={smartscreenRef} id="smartscreen-guide" style={{ scrollMarginTop: '80px' }}>
-
-            {/* REASSURANCE CARD */}
-            <div className="scroll-fade" style={{ marginBottom: '32px' }}>
-              <div style={{
-                background: 'var(--black)', border: '2px solid var(--black)',
-                boxShadow: '8px 8px 0 var(--accent)', padding: '40px'
-              }}>
-                <div className="neo-tag" style={{ background: 'var(--accent)', marginBottom: '20px' }}>
-                  WINDOWS SECURITY NOTE
-                </div>
-                <h2 style={{ fontSize: '28px', color: 'var(--white)', marginBottom: '16px' }}>
-                  🔒 A Quick Note on Privacy-First Software
-                </h2>
-                <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '16px', lineHeight: 1.8, maxWidth: '680px' }}>
-                  PosturePal runs <strong style={{ color: 'var(--accent)' }}>100% on-device AI</strong>. Your webcam feed never leaves your computer, and we never collect or track your data. Because we are a completely independent, privacy-focused app and do not bundle corporate tracking telemetry, Windows SmartScreen might flag the installer as an "Unknown Publisher" on your first run. <strong style={{ color: 'var(--accent)' }}>Don't worry — this is completely normal for indie desktop software!</strong> Follow the 3 steps below to install safely.
-                </p>
-              </div>
-            </div>
-
-            {/* BYPASS GUIDE */}
-            <div className="scroll-fade">
-              <h2 style={{ fontSize: '28px', marginBottom: '24px', textAlign: 'center' }}>
-                How to Bypass the SmartScreen Warning
-              </h2>
-              <div className="grid-3">
-
-                {/* Step 1 */}
-                <div className="neo-card" style={{ background: 'var(--white)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                      background: 'var(--accent)', border: '2px solid var(--black)',
-                      width: '40px', height: '40px', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0,
-                      boxShadow: '2px 2px 0 var(--black)'
-                    }}>1</div>
-                    <div style={{ fontSize: '28px' }}>⬇️</div>
-                  </div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Download & Open</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: '14px', flex: 1, lineHeight: 1.6 }}>
-                    Download and run the <strong>PosturePal-Setup.exe</strong> file. Windows will show a blue security screen — that's expected.
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div className="neo-card" style={{ background: 'var(--white)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                      background: 'var(--accent)', border: '2px solid var(--black)',
-                      width: '40px', height: '40px', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0,
-                      boxShadow: '2px 2px 0 var(--black)'
-                    }}>2</div>
-                    <div style={{ fontSize: '28px' }}>ℹ️</div>
-                  </div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Click 'More Info'</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: '14px', flex: 1, lineHeight: 1.6 }}>
-                    When the Windows security screen appears, click the small underlined <strong>'More info'</strong> link right under the description text.
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div className="neo-card" style={{ background: 'var(--accent)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                      background: 'var(--black)', border: '2px solid var(--black)',
-                      width: '40px', height: '40px', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0,
-                      color: 'var(--accent)', boxShadow: '2px 2px 0 var(--black)'
-                    }}>3</div>
-                    <div style={{ fontSize: '28px' }}>✅</div>
-                  </div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Click 'Run Anyway'</h3>
-                  <p style={{ color: 'var(--black)', fontSize: '14px', flex: 1, lineHeight: 1.6 }}>
-                    A new button will appear at the bottom that says <strong>'Run anyway'</strong>. Click it to launch the setup wizard safely. You're in!
-                  </p>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
         </div>
       </section>
 
