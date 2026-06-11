@@ -483,7 +483,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
             style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto 32px', lineHeight: 1.75, fontWeight: 500 }}
           >
-            Available for Windows. Mac & Linux coming soon.
+            Available for Windows & Mac. Linux coming soon.
           </motion.p>
 
           <motion.div
@@ -531,7 +531,7 @@ export default function Home() {
           {[1, 2, 3, 4].map(i => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '80px', paddingRight: '80px', fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> NO SUBSCRIPTIONS</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> WINDOWS · MAC & LINUX COMING SOON</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> WINDOWS & MAC · LINUX COMING SOON</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> 100% OFFLINE</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--accent)' }}>✦</span> ON-DEVICE AI</span>
             </div>
@@ -784,7 +784,7 @@ export default function Home() {
             </Reveal>
           </div>
           <p style={{ color: 'var(--muted)', marginTop: '32px', fontSize: '14px' }}>
-            Available for Windows. Mac & Linux coming soon.
+            Available for Windows & Mac · Linux coming soon.
           </p>
         </div>
       </section>
@@ -802,7 +802,7 @@ export default function Home() {
                 { q: "How does the free trial work?", a: "Sign up with your name and email, download PosturePal for Windows, and click the launch link. You get 5 days of full access — no credit card required. The trial timer starts when you launch the app (within 24 hours of signing up). After 5 days, you can keep using PosturePal forever by paying Rs. 299 once." },
                 { q: "Is it available now?", a: "Yes. Start the free trial, or buy a lifetime license. Both download links are sent immediately." },
                 { q: "Does my webcam footage get sent anywhere?", a: "No. All processing is on-device. Nothing leaves your machine." },
-                { q: "Does it work on Mac, Windows, and Linux?", a: "Currently available on Windows. Mac and Linux versions are coming soon." },
+                { q: "Does it work on Mac, Windows, and Linux?", a: "Currently available on Windows & Mac. Linux versions are coming soon." },
                 { q: "What if I wear glasses or have a beard?", a: "PosturePal tracks skeletal points — shoulders, ears, nose — not your face. Glasses and beards are irrelevant." },
                 { q: "Can I use it on two computers?", a: "Yes. A paid license covers 2 devices. A free trial is tied to one device." },
                 { q: "Is this a subscription?", a: "No. One payment, lifetime access." },
