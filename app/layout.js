@@ -28,6 +28,9 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script src="https://heyo.so/embed/script?projectId=6a2ffb0cb2a7d1f432cfbe25" async></script>
+      </head>
       <body className="min-h-full flex flex-col">
         {children}
         <Analytics />
