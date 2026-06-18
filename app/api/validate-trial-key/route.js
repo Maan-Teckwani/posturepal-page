@@ -5,7 +5,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-const TRIAL_LENGTH_MS = 5 * 24 * 60 * 60 * 1000;
+const TRIAL_LENGTH_MS = 21 * 24 * 60 * 60 * 1000;
 const GRACE_MS = 24 * 60 * 60 * 1000;
 
 function json(payload, status = 200) {

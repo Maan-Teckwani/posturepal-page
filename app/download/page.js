@@ -68,7 +68,7 @@ function DownloadContent() {
             <div className="neo-tag" style={{ background: 'var(--accent)', display: 'inline-block' }}>YOUR FREE TRIAL KEY IS READY</div>
             <h1 style={{ fontSize: '48px', margin: '14px 0 12px', lineHeight: 1.1 }}>Download PosturePal & paste your key.</h1>
             <p style={{ fontSize: '17px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto' }}>
-              Your 5-day trial timer starts the moment you activate the key inside the app.
+              Your 21-day trial timer starts the moment you activate the key inside the app.
             </p>
           </div>
 
@@ -131,7 +131,7 @@ function DownloadContent() {
               <h3 style={{ fontSize: '18px', marginBottom: '6px' }}>After installing, paste your trial key</h3>
               <p style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 1.65, margin: 0 }}>
                 Launch PosturePal, allow camera access, and paste the trial key shown above on the activation screen.
-                Your 5-day trial starts immediately.
+                Your 21-day trial starts immediately.
               </p>
             </div>
           </div>

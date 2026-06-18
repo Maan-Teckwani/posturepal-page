@@ -1,4 +1,4 @@
--- Free trial pivot: 5-day trial with server-side activation + machine binding.
+-- Free trial pivot: 21-day trial with server-side activation + machine binding.
 -- Run this manually in the Supabase SQL editor.
 
 -- 1. Add status column to customers ('unpaid' | 'trial' | 'paid').

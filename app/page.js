@@ -350,9 +350,9 @@ const TrialSignupModal = ({ onSubmit, onClose, loading }) => {
     <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{ background: 'var(--cream)', border: '2px solid var(--black)', boxShadow: '8px 8px 0 var(--black)', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1 }}>×</button>
-        <div className="neo-tag" style={{ background: '#d4f57a', marginBottom: '12px' }}>5-DAY FREE TRIAL</div>
+        <div className="neo-tag" style={{ background: '#d4f57a', marginBottom: '12px' }}>21-DAY FREE TRIAL</div>
         <h2 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '28px', marginBottom: '6px' }}>Start your trial.</h2>
-        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>No credit card required. Full access for 5 days.</p>
+        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>No credit card required. Full access for 21 days.</p>
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>{field('First Name', 'firstName', 'text', 'Jane')}</div>
@@ -492,7 +492,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.34, ease: [0.16, 1, 0.3, 1] }}
             style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}
           >
-            <TrialButton buttonText="Start Free Trial — 5 days" />
+            <TrialButton buttonText="Start Free Trial — 21 days" />
             <a href="#pricing-card" className="neo-btn" style={{ fontSize: '16px', padding: '16px 32px', textDecoration: 'none', background: 'var(--white)', color: 'var(--black)' }}>
               Buy Lifetime — Rs. {PRICE}
             </a>
@@ -730,20 +730,20 @@ export default function Home() {
             <h2 style={{ fontSize: '52px', marginBottom: '16px' }}>Build the habit. Then keep it forever.</h2>
           </Reveal>
           <p style={{ color: 'var(--muted)', marginBottom: '48px', maxWidth: '520px', margin: '0 auto 48px auto' }}>
-            Start with a 5-day free trial. No card required. Love it? Pay once for lifetime access.
+            Start with a 21-day free trial. No card required. Love it? Pay once for lifetime access.
           </p>
           <div id="pricing-card" style={{ scrollMarginTop: '80px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', maxWidth: '900px', margin: '0 auto', alignItems: 'stretch' }}>
             <Reveal variant="fadeUp">
               <div className="neo-card" style={{ background: 'var(--white)', border: '2px solid black', boxShadow: '8px 8px 0 black', padding: '40px', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <div className="neo-tag" style={{ background: '#d4f57a', marginBottom: '16px', alignSelf: 'center' }}>FREE TRIAL</div>
-                <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '32px', marginBottom: '6px' }}>5 days, on us.</h3>
+                <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: '32px', marginBottom: '6px' }}>21 days, on us.</h3>
                 <p style={{ fontSize: '14px', color: 'var(--muted)', marginBottom: '24px' }}>No credit card. Full access.</p>
                 <div style={{ textAlign: 'left', margin: '0 auto 28px', maxWidth: '280px', flex: 1 }}>
                   {[
                     '✓ Full posture detection',
                     '✓ Alerts & analytics',
                     '✓ Works fully offline',
-                    '✓ Build the habit in 5 days',
+                    '✓ Build the habit in 21 days',
                     '✓ Upgrade anytime',
                   ].map((feature, i) => (
                     <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.12)', fontSize: '15px' }}>
@@ -799,7 +799,7 @@ export default function Home() {
           <Reveal variant="fadeUp">
             <div>
               {[
-                { q: "How does the free trial work?", a: "Sign up with your name and email, download PosturePal for Windows, and click the launch link. You get 5 days of full access — no credit card required. The trial timer starts when you launch the app (within 24 hours of signing up). After 5 days, you can keep using PosturePal forever by paying Rs. 299 once." },
+                { q: "How does the free trial work?", a: "Sign up with your name and email, download PosturePal for Windows, and click the launch link. You get 21 days of full access — no credit card required. The trial timer starts when you launch the app (within 24 hours of signing up). After 21 days, you can keep using PosturePal forever by paying Rs. 299 once." },
                 { q: "Is it available now?", a: "Yes. Start the free trial, or buy a lifetime license. Both download links are sent immediately." },
                 { q: "Does my webcam footage get sent anywhere?", a: "No. All processing is on-device. Nothing leaves your machine." },
                 { q: "Does it work on Mac, Windows, and Linux?", a: "Currently available on Windows & Mac. Linux versions are coming soon." },
@@ -842,7 +842,7 @@ export default function Home() {
             </a>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '16px', fontSize: '14px' }}>
-            5 days free. Lifetime for Rs. {PRICE}. No subscription. Works offline.
+            21 days free. Lifetime for Rs. {PRICE}. No subscription. Works offline.
           </p>
           <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: '60px 0 40px' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
