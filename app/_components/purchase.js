@@ -1,8 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export const PRICE = 299;
+
+// Render overlays at document.body so a transformed ancestor (e.g. a GSAP-animated
+// Reveal wrapper) can't trap our position:fixed modal off-center. This keeps every
+// trial/buy modal perfectly centered over a dimmed full-page backdrop.
+const Portal = ({ children }) =>
+  typeof document === 'undefined' ? null : createPortal(children, document.body);
 
 const CheckoutModal = ({ onSubmit, onClose, loading }) => {
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '' });
@@ -30,25 +37,27 @@ const CheckoutModal = ({ onSubmit, onClose, loading }) => {
   );
 
   return (
-    <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,22,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ background: 'var(--paper)', border: 'var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative' }}>
-        <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1, color: 'var(--muted)' }}>×</button>
-        <h2 style={{ fontSize: '28px', marginBottom: '6px' }}>Almost there.</h2>
-        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>Your license key will be shown instantly after payment.</p>
-        <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <div>{field('First Name', 'firstName', 'text', 'Jane')}</div>
-            <div>{field('Last Name', 'lastName', 'text', 'Doe')}</div>
-          </div>
-          {field('Email', 'email', 'email', 'jane@example.com')}
-          {error && <div style={{ color: '#b91c1c', fontSize: '13px', marginBottom: '14px', marginTop: '-4px' }}>{error}</div>}
-          <button type="submit" disabled={loading} className="btn btn-accent" style={{ width: '100%', fontSize: '15px', padding: '14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
-            {loading ? 'Processing...' : `Proceed to Payment — Rs. ${PRICE}`}
-          </button>
-          <p style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', marginTop: '12px' }}>Secure payment via Razorpay</p>
-        </form>
+    <Portal>
+      <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,22,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ background: 'var(--paper)', border: 'var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative' }}>
+          <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1, color: 'var(--muted)' }}>×</button>
+          <h2 style={{ fontSize: '28px', marginBottom: '6px' }}>Almost there.</h2>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>Your license key will be shown instantly after payment.</p>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>{field('First Name', 'firstName', 'text', 'Jane')}</div>
+              <div>{field('Last Name', 'lastName', 'text', 'Doe')}</div>
+            </div>
+            {field('Email', 'email', 'email', 'jane@example.com')}
+            {error && <div style={{ color: '#b91c1c', fontSize: '13px', marginBottom: '14px', marginTop: '-4px' }}>{error}</div>}
+            <button type="submit" disabled={loading} className="btn btn-accent" style={{ width: '100%', fontSize: '15px', padding: '14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Processing...' : `Proceed to Payment — Rs. ${PRICE}`}
+            </button>
+            <p style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', marginTop: '12px' }}>Secure payment via Razorpay</p>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 
@@ -136,21 +145,23 @@ export const RazorpayButton = ({ buttonText = `Buy Now — Rs. ${PRICE}`, style 
     <>
       {showModal && <CheckoutModal onSubmit={handleFormSubmit} onClose={() => { setShowModal(false); setLoading(false); }} loading={loading} />}
       {processingPayment && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,22,0.7)', zIndex: 1001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <style>{`@keyframes pp-spin { to { transform: rotate(360deg); } }`}</style>
-          <div style={{ background: 'var(--paper)', border: 'var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: '32px 36px', maxWidth: '400px', width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '50%', border: '3px solid var(--ink)', borderTopColor: 'var(--accent)', animation: 'pp-spin 0.8s linear infinite', flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: '15px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Processing payment...</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '3px' }}>PosturePal Lifetime License</div>
+        <Portal>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,22,0.7)', zIndex: 1001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+            <style>{`@keyframes pp-spin { to { transform: rotate(360deg); } }`}</style>
+            <div style={{ background: 'var(--paper)', border: 'var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: '32px 36px', maxWidth: '400px', width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '50%', border: '3px solid var(--ink)', borderTopColor: 'var(--accent)', animation: 'pp-spin 0.8s linear infinite', flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: '15px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Processing payment...</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '3px' }}>PosturePal Lifetime License</div>
+                </div>
+                <div style={{ fontWeight: 700, fontSize: '15px', fontFamily: 'monospace', flexShrink: 0 }}>Rs. {PRICE}</div>
               </div>
-              <div style={{ fontWeight: 700, fontSize: '15px', fontFamily: 'monospace', flexShrink: 0 }}>Rs. {PRICE}</div>
+              <div style={{ height: '1px', background: 'var(--line)' }} />
+              <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0, lineHeight: 1.6 }}>Verifying your payment and generating your license key. Please don&apos;t close this window.</p>
             </div>
-            <div style={{ height: '1px', background: 'var(--line)' }} />
-            <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0, lineHeight: 1.6 }}>Verifying your payment and generating your license key. Please don&apos;t close this window.</p>
           </div>
-        </div>
+        </Portal>
       )}
       <button onClick={() => { setError(null); setShowModal(true); }} className="btn btn-accent" style={{ whiteSpace: 'nowrap', cursor: 'pointer', ...style }}>
         {buttonText}
@@ -186,26 +197,28 @@ const TrialSignupModal = ({ onSubmit, onClose, loading }) => {
   );
 
   return (
-    <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,22,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ background: 'var(--paper)', border: 'var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative' }}>
-        <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1, color: 'var(--muted)' }}>×</button>
-        <div className="pill" style={{ marginBottom: '12px' }}>21-day free trial</div>
-        <h2 style={{ fontSize: '28px', marginBottom: '6px' }}>Start your trial.</h2>
-        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>No credit card required. Full access for 21 days.</p>
-        <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <div>{field('First Name', 'firstName', 'text', 'Jane')}</div>
-            <div>{field('Last Name', 'lastName', 'text', 'Doe')}</div>
-          </div>
-          {field('Email', 'email', 'email', 'jane@example.com')}
-          {error && <div style={{ color: '#b91c1c', fontSize: '13px', marginBottom: '14px', marginTop: '-4px' }}>{error}</div>}
-          <button type="submit" disabled={loading} className="btn btn-accent" style={{ width: '100%', fontSize: '15px', padding: '14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
-            {loading ? 'Starting trial...' : 'Start Free Trial →'}
-          </button>
-          <p style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', marginTop: '12px' }}>Timer starts when you launch the app (within 24h of signup).</p>
-        </form>
+    <Portal>
+      <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,22,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ background: 'var(--paper)', border: 'var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: '40px', maxWidth: '440px', width: '100%', position: 'relative' }}>
+          <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', fontWeight: 300, lineHeight: 1, color: 'var(--muted)' }}>×</button>
+          <div className="pill" style={{ marginBottom: '12px' }}>21-day free trial</div>
+          <h2 style={{ fontSize: '28px', marginBottom: '6px' }}>Start your trial.</h2>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '28px' }}>No credit card required. Full access for 21 days.</p>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>{field('First Name', 'firstName', 'text', 'Jane')}</div>
+              <div>{field('Last Name', 'lastName', 'text', 'Doe')}</div>
+            </div>
+            {field('Email', 'email', 'email', 'jane@example.com')}
+            {error && <div style={{ color: '#b91c1c', fontSize: '13px', marginBottom: '14px', marginTop: '-4px' }}>{error}</div>}
+            <button type="submit" disabled={loading} className="btn btn-accent" style={{ width: '100%', fontSize: '15px', padding: '14px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Starting trial...' : 'Start Free Trial →'}
+            </button>
+            <p style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', marginTop: '12px' }}>Timer starts when you launch the app (within 24h of signup).</p>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 
