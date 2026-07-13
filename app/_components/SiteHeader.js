@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EASE } from './motion';
 
@@ -42,7 +43,17 @@ export const BrandMark = ({ size = 30 }) => (
 const SiteHeader = () => {
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const pathname = usePathname();
   const close = () => setOpen(false);
+
+  // On the home page, Next's Link to "/" is a no-op — scroll to top instead.
+  const handleBrandClick = (e) => {
+    close();
+    if (pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -62,7 +73,7 @@ const SiteHeader = () => {
     <>
       <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
         <div className="site-header-inner">
-          <Link href="/" className="brand" onClick={close} aria-label="PosturePal home">
+          <Link href="/" className="brand" onClick={handleBrandClick} aria-label="PosturePal home">
             <BrandMark />
             <span className="brand-name">PosturePal</span>
           </Link>

@@ -1,35 +1,56 @@
 'use client';
 
 import React from 'react';
-import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// One easing + duration for every scroll reveal on the site.
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+// Easing for the framer-motion interactions that remain (FAQ accordion, mobile menu).
 export const EASE = [0.22, 1, 0.36, 1];
-export const REVEAL_DURATION = 0.55;
 
-export const revealVariants = {
-  fadeUp: { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } },
-};
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export const Reveal = ({ children, variant = 'fadeUp', delay = 0, style = {}, className }) => {
+// GSAP scroll reveal — a premium eased fade + rise that fires once as the
+// element scrolls in. Initial opacity:0 is inline so there's no flash of
+// unstyled content before GSAP takes over.
+export const Reveal = ({ children, delay = 0, y = 18, style = {}, className }) => {
   const ref = React.useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
-  const reduced = useReducedMotion();
-  if (reduced) {
-    return <div style={style} className={className}>{children}</div>;
-  }
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    if (prefersReducedMotion()) {
+      gsap.set(el, { autoAlpha: 1, y: 0 });
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        el,
+        { autoAlpha: 0, y },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.75,
+          delay,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+        }
+      );
+    }, ref);
+
+    return () => ctx.revert();
+  }, [delay, y]);
+
   return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      variants={revealVariants[variant]}
-      transition={{ duration: REVEAL_DURATION, delay, ease: EASE }}
-      style={style}
-      className={className}
-    >
+    <div ref={ref} style={{ opacity: 0, ...style }} className={className}>
       {children}
-    </motion.div>
+    </div>
   );
 };
 
@@ -44,7 +65,7 @@ export const SectionHeading = ({ kicker, title, lede, center = false, onDark = f
     <Reveal delay={0.06}>
       <h2
         style={{
-          fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
+          fontSize: 'clamp(1.85rem, 3vw, 2.75rem)',
           lineHeight: 1.15,
           letterSpacing: '-0.015em',
           margin: center ? '16px auto 0' : '16px 0 0',

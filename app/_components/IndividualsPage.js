@@ -50,25 +50,24 @@ export default function IndividualsPage() {
     <div>
       <SiteHeader />
 
-      {/* HERO */}
-      <section className="section--hero" style={{ position: 'relative' }}>
-        <HeroBackdrop variant="subtle" />
-        <div className="shell" style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '56px', alignItems: 'center' }}>
+      {/* HERO — copy left, live posture animation right */}
+      <section className="section--hero">
+        <div className="shell" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
           <div>
             <Reveal><div className="pill">PosturePal for You</div></Reveal>
             <Reveal delay={0.06}>
-              <h1 style={{ fontSize: 'clamp(2.25rem, 4.5vw, 3.5rem)', lineHeight: 1.08, margin: '24px 0 0', maxWidth: '15ch' }}>
+              <h1 style={{ fontSize: 'clamp(2.5rem, 4.5vw, 4rem)', lineHeight: 1.08, margin: '20px 0 0', maxWidth: '15ch' }}>
                 Your back will <span className="hl">thank you.</span>
               </h1>
             </Reveal>
             <Reveal delay={0.12}>
-              <p style={{ fontSize: '1.15rem', lineHeight: 1.6, color: 'var(--muted)', margin: '22px 0 0', maxWidth: '48ch', textWrap: 'pretty' }}>
+              <p style={{ fontSize: '1.15rem', lineHeight: 1.6, color: 'var(--muted)', margin: '20px 0 0', maxWidth: '46ch', textWrap: 'pretty' }}>
                 PosturePal turns your laptop&apos;s webcam into a quiet posture coach that nudges you
                 before the ache sets in. Private. Offline. One payment.
               </p>
             </Reveal>
             <Reveal delay={0.18}>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '34px' }}>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '30px' }}>
                 <TrialButton buttonText="Start free trial — 21 days" />
                 <a href="#pricing-ind" className="btn btn-ghost">Buy lifetime — Rs. {PRICE}</a>
               </div>
@@ -79,11 +78,7 @@ export default function IndividualsPage() {
               </p>
             </Reveal>
           </div>
-          <Reveal delay={0.15}>
-            <MediaFrame>
-              <VideoDemo src="/demo-posture-score.mp4" />
-            </MediaFrame>
-          </Reveal>
+          <HeroBackdrop />
         </div>
       </section>
 

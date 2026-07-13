@@ -13,7 +13,7 @@ import FaqList from './FaqList';
 // ── Config the owner should review before launch ────────────────────────────
 // Where team-demo requests land. Swap for a dedicated sales inbox or replace
 // the form CTA with a Calendly link when one exists.
-const SALES_EMAIL = 'support@posturepal.io';
+const SALES_EMAIL = 'maan@posturepal.in';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const B2B_FAQS = [
@@ -37,6 +37,16 @@ const IT_CHECKLIST = [
   'No footage recorded, stored, or transmitted',
   'No admin dashboard of individual behavior — ever',
   'Simple installers for Windows & Mac; Linux coming soon',
+];
+
+// The three product demos, framed for a team audience.
+const TEAMS_DEMOS = [
+  { num: '01', video: '/demo-posture-score.mp4', mediaFirst: false,
+    title: 'A live posture score', body: 'Every employee sees their sitting position scored 0–100 in real time — private to them, never to a manager.' },
+  { num: '02', video: '/demo-slouch-alerts.mp4', mediaFirst: true, wash: true,
+    title: 'A gentle, on-device nudge', body: 'The moment posture slips, a quiet desktop reminder appears. No meetings, no behaviour program — it just works in the background.' },
+  { num: '03', video: '/demo-progress.mp4', mediaFirst: false,
+    title: 'Progress people can feel', body: 'Daily and weekly trends make the improvement visible to the one person who can act on it — the employee.' },
 ];
 
 const ROLLOUT_STEPS = [
@@ -98,36 +108,31 @@ export default function TeamsPage() {
     <div>
       <SiteHeader />
 
-      {/* HERO */}
-      <section className="section--hero" style={{ position: 'relative' }}>
-        <HeroBackdrop variant="subtle" />
-        <div className="shell" style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '56px', alignItems: 'center' }}>
+      {/* HERO — copy left, live posture animation right */}
+      <section className="section--hero">
+        <div className="shell" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
           <div>
             <Reveal><div className="pill">PosturePal for Teams</div></Reveal>
             <Reveal delay={0.06}>
-              <h1 style={{ fontSize: 'clamp(2.25rem, 4.5vw, 3.5rem)', lineHeight: 1.08, margin: '24px 0 0', maxWidth: '16ch' }}>
+              <h1 style={{ fontSize: 'clamp(2.5rem, 4.5vw, 4rem)', lineHeight: 1.08, margin: '20px 0 0', maxWidth: '16ch' }}>
                 A wellness benefit your team actually <span className="hl">feels.</span>
               </h1>
             </Reveal>
             <Reveal delay={0.12}>
-              <p style={{ fontSize: '1.15rem', lineHeight: 1.6, color: 'var(--muted)', margin: '22px 0 0', maxWidth: '50ch', textWrap: 'pretty' }}>
+              <p style={{ fontSize: '1.15rem', lineHeight: 1.6, color: 'var(--muted)', margin: '20px 0 0', maxWidth: '48ch', textWrap: 'pretty' }}>
                 Desk work quietly wears backs down. PosturePal keeps your people upright through the
                 day — with on-device AI that never sends a single frame off their laptop. IT-friendly
                 by design.
               </p>
             </Reveal>
             <Reveal delay={0.18}>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '34px' }}>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '30px' }}>
                 <a href="#pricing-teams" className="btn btn-accent">Book a demo</a>
                 <Link href="/#how" className="btn btn-ghost">See how it works</Link>
               </div>
             </Reveal>
           </div>
-          <Reveal delay={0.15}>
-            <MediaFrame>
-              <VideoDemo src="/demo-slouch-alerts.mp4" />
-            </MediaFrame>
-          </Reveal>
+          <HeroBackdrop />
         </div>
       </section>
 
@@ -143,6 +148,38 @@ export default function TeamsPage() {
                   <p style={{ fontSize: '1rem', lineHeight: 1.6, color: 'var(--muted)', margin: '10px 0 0' }}>{card.body}</p>
                 </div>
               </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SEE IT IN ACTION — the three product demos */}
+      <section className="section">
+        <div className="shell">
+          <SectionHeading kicker="See it in action" title="What your team actually gets." maxWidth="22ch" />
+          <div style={{ display: 'grid', gap: 'clamp(48px, 6vw, 80px)', marginTop: '48px' }}>
+            {TEAMS_DEMOS.map(f => (
+              <div key={f.num} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'clamp(28px, 4vw, 56px)', alignItems: 'center' }}>
+                {f.mediaFirst && (
+                  <Reveal delay={0.12}>
+                    <MediaFrame><VideoDemo src={f.video} /></MediaFrame>
+                  </Reveal>
+                )}
+                <div>
+                  <Reveal><div className="num-chip">{f.num}</div></Reveal>
+                  <Reveal delay={0.06}>
+                    <h3 style={{ fontSize: 'clamp(1.5rem, 2.4vw, 2rem)', lineHeight: 1.2, letterSpacing: '-0.01em', margin: '16px 0 0' }}>{f.title}</h3>
+                  </Reveal>
+                  <Reveal delay={0.1}>
+                    <p style={{ fontSize: '1.05rem', lineHeight: 1.65, color: 'var(--muted)', margin: '12px 0 0', maxWidth: '48ch' }}>{f.body}</p>
+                  </Reveal>
+                </div>
+                {!f.mediaFirst && (
+                  <Reveal delay={0.12}>
+                    <MediaFrame><VideoDemo src={f.video} /></MediaFrame>
+                  </Reveal>
+                )}
+              </div>
             ))}
           </div>
         </div>

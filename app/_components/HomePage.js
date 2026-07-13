@@ -99,9 +99,7 @@ export default function HomePage() {
           </div>
 
           {/* Live posture animation — the hero highlight */}
-          <Reveal delay={0.14}>
-            <HeroBackdrop variant="showcase" />
-          </Reveal>
+          <HeroBackdrop />
         </div>
       </section>
 
