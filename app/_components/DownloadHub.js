@@ -38,13 +38,12 @@ function Tab({ active, onClick, children }) {
       onClick={onClick}
       style={{
         flex: 1,
-        background: active ? 'var(--black)' : 'transparent',
-        color: active ? 'var(--white)' : 'var(--black)',
+        background: active ? 'var(--forest)' : 'transparent',
+        color: active ? 'var(--paper-on-dark)' : 'var(--muted)',
         border: 'none',
-        borderRight: '2px solid var(--black)',
         padding: '14px 16px',
         fontSize: '15px',
-        fontWeight: 700,
+        fontWeight: 600,
         cursor: 'pointer',
         transition: 'background 0.15s, color 0.15s',
         display: 'flex',
@@ -62,20 +61,20 @@ function PrimaryButton({ onClick, children, sub }) {
   return (
     <button
       onClick={onClick}
-      className="neo-btn accent"
+      className="btn btn-accent"
       style={{
         width: '100%',
         padding: '18px 24px',
-        fontSize: '16px',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         gap: '4px',
         lineHeight: 1.2,
+        whiteSpace: 'normal',
       }}
     >
-      <span style={{ fontWeight: 800 }}>{children}</span>
+      <span style={{ fontWeight: 700 }}>{children}</span>
       {sub && (
         <span style={{ fontSize: '12px', fontWeight: 600, opacity: 0.75 }}>{sub}</span>
       )}
@@ -87,12 +86,9 @@ function SecondaryButton({ onClick, children, sub }) {
   return (
     <button
       onClick={onClick}
-      className="neo-btn"
+      className="btn btn-ghost"
       style={{
         width: '100%',
-        background: 'var(--white)',
-        color: 'var(--black)',
-        border: '2px solid var(--black)',
         padding: '14px 24px',
         fontSize: '14px',
         cursor: 'pointer',
@@ -101,11 +97,12 @@ function SecondaryButton({ onClick, children, sub }) {
         alignItems: 'center',
         gap: '2px',
         lineHeight: 1.2,
+        whiteSpace: 'normal',
       }}
     >
-      <span style={{ fontWeight: 700 }}>{children}</span>
+      <span style={{ fontWeight: 600 }}>{children}</span>
       {sub && (
-        <span style={{ fontSize: '11px', fontWeight: 600, opacity: 0.7 }}>{sub}</span>
+        <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.7 }}>{sub}</span>
       )}
     </button>
   );
@@ -123,26 +120,20 @@ export default function DownloadHub({ showInstallGuide = true }) {
     <div style={{ width: '100%' }}>
       {/* DOWNLOAD CARD */}
       <div
-        className="neo-card"
+        className="card card--shadow"
         style={{
-          background: 'var(--white)',
           padding: 0,
           overflow: 'hidden',
           marginBottom: showInstallGuide ? '24px' : '0',
         }}
       >
         {/* Tabs */}
-        <div
-          style={{
-            display: 'flex',
-            borderBottom: '2px solid var(--black)',
-          }}
-        >
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--line)' }}>
           <Tab active={os === 'win'} onClick={() => setOs('win')}>
-            <span style={{ fontSize: '18px' }}></span> Windows
+            Windows
           </Tab>
           <Tab active={os === 'mac'} onClick={() => setOs('mac')}>
-            <span style={{ fontSize: '18px' }}></span> Mac
+            Mac
           </Tab>
         </div>
 
@@ -173,7 +164,7 @@ export default function DownloadHub({ showInstallGuide = true }) {
               <div
                 style={{
                   fontSize: '13px',
-                  fontWeight: 700,
+                  fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
                   color: 'var(--muted)',
@@ -214,54 +205,49 @@ export default function DownloadHub({ showInstallGuide = true }) {
       {/* INSTALL GUIDE */}
       {showInstallGuide && (
         <div
+          className="dark-band"
           style={{
-            background: 'var(--black)',
-            border: '2px solid var(--black)',
-            boxShadow: '6px 6px 0 var(--accent)',
+            borderRadius: 'var(--radius-lg)',
             padding: '32px',
           }}
         >
           {os === 'win' ? (
             <>
-              <div className="neo-tag" style={{ background: 'var(--accent)', marginBottom: '14px' }}>
-                WINDOWS INSTALL GUIDE
-              </div>
-              <h3 style={{ fontSize: '22px', color: 'var(--white)', marginBottom: '12px', lineHeight: 1.25 }}>
-                About the "Windows protected your PC" warning
+              <div className="kicker" style={{ marginBottom: '14px' }}>Windows install guide</div>
+              <h3 style={{ fontSize: '22px', marginBottom: '12px', lineHeight: 1.25 }}>
+                About the &quot;Windows protected your PC&quot; warning
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '14px', lineHeight: 1.7, marginBottom: '20px' }}>
+              <p style={{ color: 'var(--sage)', fontSize: '14px', lineHeight: 1.7, marginBottom: '20px' }}>
                 PosturePal is a small indie app. Without an expensive code-signing certificate, Windows SmartScreen flags it as
-                {' '}<em>"Unknown publisher"</em>. The app is safe — it runs 100% on-device and never uploads your webcam or data.
+                {' '}<em>&quot;Unknown publisher&quot;</em>. The app is safe — it runs 100% on-device and never uploads your webcam or data.
               </p>
 
-              <ol style={{ color: 'rgba(255,255,255,0.92)', fontSize: '14px', lineHeight: 1.85, paddingLeft: '20px', margin: 0 }}>
+              <ol style={{ color: 'var(--paper-on-dark)', fontSize: '14px', lineHeight: 1.85, paddingLeft: '20px', margin: 0 }}>
                 <li>Double-click <strong>PosturePal-Setup.exe</strong>.</li>
-                <li>If the blue <em>"Windows protected your PC"</em> screen appears, click <strong style={{ color: 'var(--accent)' }}>More info</strong>.</li>
+                <li>If the blue <em>&quot;Windows protected your PC&quot;</em> screen appears, click <strong style={{ color: 'var(--accent)' }}>More info</strong>.</li>
                 <li>Click the <strong style={{ color: 'var(--accent)' }}>Run anyway</strong> button.</li>
                 <li>Follow the installer prompts. Launch PosturePal from the Start Menu.</li>
               </ol>
             </>
           ) : (
             <>
-              <div className="neo-tag" style={{ background: 'var(--accent)', marginBottom: '14px' }}>
-                MAC INSTALL GUIDE
-              </div>
-              <h3 style={{ fontSize: '22px', color: 'var(--white)', marginBottom: '12px', lineHeight: 1.25 }}>
+              <div className="kicker" style={{ marginBottom: '14px' }}>Mac install guide</div>
+              <h3 style={{ fontSize: '22px', marginBottom: '12px', lineHeight: 1.25 }}>
                 Getting past macOS Gatekeeper
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '14px', lineHeight: 1.7, marginBottom: '20px' }}>
-                We haven't yet signed PosturePal with an Apple Developer certificate, so macOS will show a Gatekeeper warning
+              <p style={{ color: 'var(--sage)', fontSize: '14px', lineHeight: 1.7, marginBottom: '20px' }}>
+                We haven&apos;t yet signed PosturePal with an Apple Developer certificate, so macOS will show a Gatekeeper warning
                 on first launch. The app is safe — it runs entirely on your device and never uploads anything.
               </p>
 
               <div style={{ marginBottom: '20px' }}>
                 <div style={{
-                  fontSize: '12px', fontWeight: 800, color: 'var(--accent)',
+                  fontSize: '12px', fontWeight: 700, color: 'var(--accent)',
                   textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px',
                 }}>
-                  If you see "cannot be opened because the developer cannot be verified"
+                  If you see &quot;cannot be opened because the developer cannot be verified&quot;
                 </div>
-                <ol style={{ color: 'rgba(255,255,255,0.92)', fontSize: '14px', lineHeight: 1.85, paddingLeft: '20px', margin: 0 }}>
+                <ol style={{ color: 'var(--paper-on-dark)', fontSize: '14px', lineHeight: 1.85, paddingLeft: '20px', margin: 0 }}>
                   <li>Open the <strong>.dmg</strong> and drag PosturePal into <strong>Applications</strong>.</li>
                   <li>Open the Applications folder, <strong>right-click</strong> PosturePal → <strong style={{ color: 'var(--accent)' }}>Open</strong>.</li>
                   <li>Click <strong style={{ color: 'var(--accent)' }}>Open</strong> again in the dialog.</li>
@@ -271,25 +257,25 @@ export default function DownloadHub({ showInstallGuide = true }) {
 
               <div>
                 <div style={{
-                  fontSize: '12px', fontWeight: 800, color: 'var(--accent)',
+                  fontSize: '12px', fontWeight: 700, color: 'var(--accent)',
                   textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px',
                 }}>
-                  If you see "PosturePal is damaged and can't be opened"
+                  If you see &quot;PosturePal is damaged and can&apos;t be opened&quot;
                 </div>
-                <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '13.5px', lineHeight: 1.7, marginBottom: '10px' }}>
-                  macOS added a quarantine tag to the download. Open <strong>Terminal</strong> (⌘ + Space → "Terminal")
+                <p style={{ color: 'var(--sage)', fontSize: '13.5px', lineHeight: 1.7, marginBottom: '10px' }}>
+                  macOS added a quarantine tag to the download. Open <strong>Terminal</strong> (⌘ + Space → &quot;Terminal&quot;)
                   and paste this, then press Enter:
                 </p>
                 <pre style={{
-                  background: 'rgba(255,255,255,0.07)',
-                  border: '1px solid rgba(255,255,255,0.2)',
+                  background: 'rgba(243,240,231,0.07)',
+                  border: '1px solid rgba(243,240,231,0.2)',
                   padding: '12px 14px',
                   fontSize: '12.5px',
                   color: 'var(--accent)',
-                  fontFamily: 'monospace',
+                  fontFamily: 'ui-monospace, Menlo, monospace',
                   overflowX: 'auto',
                   margin: 0,
-                  borderRadius: '4px',
+                  borderRadius: '8px',
                 }}>
                   xattr -dr com.apple.quarantine /Applications/PosturePal.app
                 </pre>
@@ -298,7 +284,7 @@ export default function DownloadHub({ showInstallGuide = true }) {
           )}
 
           <p style={{
-            color: 'rgba(255,255,255,0.55)', fontSize: '12px',
+            color: 'var(--sage)', fontSize: '12px',
             margin: '20px 0 0', lineHeight: 1.6,
           }}>
             Stuck? Email{' '}

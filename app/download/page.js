@@ -2,7 +2,22 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import DownloadHub from '../_components/DownloadHub';
+
+const MiniNav = ({ showHelp = false }) => (
+  <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--paper)', borderBottom: '1px solid var(--line)', height: '64px', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
+    <div style={{ maxWidth: 'var(--max-width)', margin: '0 auto', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Link href="/" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', color: 'var(--ink)' }}>
+        <div style={{ fontWeight: 600, fontSize: '18px', lineHeight: 1.1 }}>PosturePal</div>
+        <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>back to home</div>
+      </Link>
+      {showHelp && (
+        <a href="mailto:support@posturepal.io" style={{ textDecoration: 'none', color: 'var(--ink)', fontSize: '14px', fontWeight: 600 }}>Need help?</a>
+      )}
+    </div>
+  </nav>
+);
 
 function DownloadContent() {
   const searchParams = useSearchParams();
@@ -23,24 +38,17 @@ function DownloadContent() {
 
   if (!trialKey) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--cream)' }}>
-        <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--white)', borderBottom: '2px solid var(--black)', height: '64px', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-          <div style={{ maxWidth: 'var(--max-width)', margin: '0 auto', width: '100%' }}>
-            <a href="/" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', color: 'var(--black)' }}>
-              <div style={{ fontWeight: 700, fontSize: '18px', lineHeight: 1.1 }}>PosturePal</div>
-              <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>back to home</div>
-            </a>
-          </div>
-        </nav>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--paper)' }}>
+        <MiniNav />
         <section style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 24px' }}>
-          <div className="neo-card" style={{ background: 'var(--white)', padding: '48px', maxWidth: '480px', textAlign: 'center' }}>
+          <div className="card card--shadow" style={{ padding: '48px', maxWidth: '480px', textAlign: 'center' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
             <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>No trial key found</h2>
             <p style={{ color: 'var(--muted)', fontSize: '15px', marginBottom: '28px', lineHeight: 1.7 }}>
-              Start your free trial from the home page to get a trial key and download link.
+              Start your free trial to get a trial key and download link.
             </p>
-            <a href="/" className="neo-btn accent" style={{ textDecoration: 'none', padding: '14px 32px' }}>
-              Back to Home
+            <a href="/individuals#pricing-ind" className="btn btn-accent">
+              Start Free Trial
             </a>
           </div>
         </section>
@@ -49,53 +57,39 @@ function DownloadContent() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--cream)' }}>
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--white)', borderBottom: '2px solid var(--black)', height: '64px', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-        <div style={{ maxWidth: 'var(--max-width)', margin: '0 auto', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <a href="/" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', color: 'var(--black)' }}>
-            <div style={{ fontWeight: 700, fontSize: '18px', lineHeight: 1.1 }}>PosturePal</div>
-            <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>back to home</div>
-          </a>
-          <a href="mailto:support@posturepal.io" style={{ textDecoration: 'none', color: 'var(--black)', fontSize: '14px', fontWeight: 600 }}>Need help?</a>
-        </div>
-      </nav>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--paper)' }}>
+      <MiniNav showHelp />
 
       <section style={{ padding: '48px 24px 60px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ maxWidth: '720px', width: '100%' }}>
 
           {/* HERO */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div className="neo-tag" style={{ background: 'var(--accent)', display: 'inline-block' }}>YOUR FREE TRIAL KEY IS READY</div>
-            <h1 style={{ fontSize: '48px', margin: '14px 0 12px', lineHeight: 1.1 }}>Download PosturePal & paste your key.</h1>
+            <div className="pill"><span className="pill-dot" />Your free trial key is ready</div>
+            <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', margin: '14px 0 12px', lineHeight: 1.1 }}>Download PosturePal &amp; paste your key.</h1>
             <p style={{ fontSize: '17px', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto' }}>
               Your 21-day trial timer starts the moment you activate the key inside the app.
             </p>
           </div>
 
           {/* TRIAL KEY CARD */}
-          <div className="neo-card" style={{ background: 'var(--white)', padding: '28px', marginBottom: '32px', textAlign: 'center' }}>
+          <div className="card card--shadow" style={{ padding: '28px', marginBottom: '32px', textAlign: 'center' }}>
             <h2 style={{ fontSize: '20px', marginBottom: '6px' }}>Your Free Trial Key</h2>
             <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '18px' }}>
-              Copy this. You'll paste it into PosturePal after installing.
+              Copy this. You&apos;ll paste it into PosturePal after installing.
             </p>
             <div style={{
-              background: 'var(--accent)', border: '2px solid var(--black)',
+              background: 'var(--accent-soft)', border: 'var(--border)', borderRadius: 'var(--radius-md)',
               padding: '18px 16px', fontSize: '22px', letterSpacing: '4px',
-              textAlign: 'center', fontFamily: 'monospace', fontWeight: 700,
-              marginBottom: '14px', userSelect: 'all'
+              textAlign: 'center', fontFamily: 'ui-monospace, Menlo, monospace', fontWeight: 700,
+              color: 'var(--forest)', marginBottom: '14px', userSelect: 'all'
             }}>
               {trialKey}
             </div>
             <button
               onClick={handleCopy}
-              className="neo-btn"
-              style={{
-                background: copied ? 'var(--accent)' : 'var(--black)',
-                color: copied ? 'var(--black)' : 'var(--white)',
-                border: '2px solid var(--black)',
-                padding: '12px 28px', fontSize: '14px', fontWeight: 700,
-                cursor: 'pointer'
-              }}
+              className={copied ? 'btn btn-accent' : 'btn btn-forest'}
+              style={{ padding: '12px 28px', fontSize: '14px', cursor: 'pointer' }}
             >
               {copied ? '✓ Copied!' : 'Copy Trial Key'}
             </button>
@@ -105,7 +99,7 @@ function DownloadContent() {
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '28px', marginBottom: '6px' }}>Download the app</h2>
             <p style={{ color: 'var(--muted)', fontSize: '14px', margin: 0 }}>
-              We've picked your platform automatically — switch tabs if it's wrong.
+              We&apos;ve picked your platform automatically — switch tabs if it&apos;s wrong.
             </p>
           </div>
 
@@ -115,13 +109,10 @@ function DownloadContent() {
           </div>
 
           {/* AFTER-INSTALL REMINDER */}
-          <div
-            className="neo-card"
-            style={{ background: 'var(--white)', padding: '24px 28px', display: 'flex', gap: '18px', alignItems: 'flex-start' }}
-          >
+          <div className="card" style={{ padding: '24px 28px', display: 'flex', gap: '18px', alignItems: 'flex-start' }}>
             <div style={{
-              background: 'var(--black)', color: 'var(--accent)',
-              border: '2px solid var(--black)', boxShadow: '3px 3px 0 var(--accent)',
+              background: 'var(--forest)', color: 'var(--accent)',
+              borderRadius: 'var(--radius-sm)',
               width: '44px', height: '44px', display: 'flex', alignItems: 'center',
               justifyContent: 'center', fontWeight: 800, fontSize: '18px', flexShrink: 0,
             }}>
@@ -139,7 +130,7 @@ function DownloadContent() {
         </div>
       </section>
 
-      <footer style={{ borderTop: '2px solid var(--black)', padding: '24px', textAlign: 'center', fontSize: '14px', fontWeight: 600, background: 'var(--white)' }}>
+      <footer style={{ borderTop: '1px solid var(--line)', padding: '24px', textAlign: 'center', fontSize: '14px', fontWeight: 500, color: 'var(--muted)', background: 'var(--wash)' }}>
         © 2026 PosturePal. Your spine is safe.
       </footer>
     </div>
@@ -149,7 +140,7 @@ function DownloadContent() {
 export default function DownloadPage() {
   return (
     <Suspense fallback={
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--cream)', fontWeight: 600 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--paper)', fontWeight: 600 }}>
         Loading...
       </div>
     }>
