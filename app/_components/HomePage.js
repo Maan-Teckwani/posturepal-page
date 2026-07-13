@@ -23,7 +23,7 @@ const HOW_STEPS = [
   { num: '03', title: 'A gentle nudge, when it matters', body: 'The moment you slouch, a small notification appears. One glance, one adjustment.' },
 ];
 
-const ROLL_WORDS = ['deep work.', 'back-to-back meetings.', 'a long coding run.'];
+const ROLL_WORDS = ['deep work.', 'flow state.', 'a long coding run.'];
 
 // Word cycler for the how-it-works lede — stacked lines shifted vertically.
 const WordRoll = () => {
@@ -61,53 +61,46 @@ export default function HomePage() {
     <div>
       <SiteHeader />
 
-      {/* HERO */}
-      <section className="section--hero" style={{ position: 'relative' }}>
-        <HeroBackdrop />
-        <div className="shell" style={{ position: 'relative', zIndex: 1, display: 'grid', justifyItems: 'center', textAlign: 'center' }}>
-          <Reveal>
-            <div className="pill"><span className="pill-dot" />On-device AI · Private by design</div>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h1 style={{ fontSize: 'clamp(2.75rem, 6vw, 5rem)', lineHeight: 1.05, margin: '28px 0 0', maxWidth: '14ch' }}>
-              Sit like you <span className="hl">mean it.</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <p style={{ fontSize: '1.15rem', lineHeight: 1.6, color: 'var(--muted)', maxWidth: '52ch', margin: '24px 0 0', textWrap: 'pretty' }}>
-              A private posture coach that lives on your laptop and nudges you upright — before the
-              ache sets in. On-device AI. Your camera feed never leaves your machine.
-            </p>
-          </Reveal>
+      {/* HERO — split: copy left, the live posture animation as the highlight right */}
+      <section className="section--hero">
+        <div className="shell" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
+          <div>
+            <Reveal>
+              <div className="pill"><span className="pill-dot" />On-device AI · Private by design</div>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <h1 style={{ fontSize: 'clamp(2.75rem, 5.5vw, 4.5rem)', lineHeight: 1.05, margin: '20px 0 0', maxWidth: '13ch' }}>
+                Sit like you <span className="hl">mean it.</span>
+              </h1>
+            </Reveal>
+            <Reveal delay={0.12}>
+              <p style={{ fontSize: '1.15rem', lineHeight: 1.6, color: 'var(--muted)', maxWidth: '46ch', margin: '20px 0 0', textWrap: 'pretty' }}>
+                A private posture coach that lives on your laptop and nudges you upright — before the ache sets in.
+              </p>
+            </Reveal>
 
-          {/* Equal two-path split */}
-          <Reveal delay={0.18} style={{ width: '100%', maxWidth: '720px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', marginTop: '44px' }}>
-              <PathCard
-                href="/teams"
-                eyebrow="For your team"
-                title="PosturePal for Teams"
-                blurb="A wellness benefit your people actually feel."
-              />
-              <PathCard
-                href="/individuals"
-                eyebrow="For yourself"
-                title="PosturePal for You"
-                blurb="One payment. Your back thanks you forever."
-              />
-            </div>
-          </Reveal>
-          <Reveal delay={0.22}>
-            <p style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--faint)', margin: '20px 0 0' }}>
-              Available for Windows &amp; Mac · Linux coming soon
-            </p>
-          </Reveal>
+            {/* Equal two-path split */}
+            <Reveal delay={0.18}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '16px', marginTop: '32px' }}>
+                <PathCard
+                  href="/teams"
+                  eyebrow="For your team"
+                  title="PosturePal for Teams"
+                  blurb="A wellness benefit your people actually feel."
+                />
+                <PathCard
+                  href="/individuals"
+                  eyebrow="For yourself"
+                  title="PosturePal for You"
+                  blurb="One payment. Your back thanks you forever."
+                />
+              </div>
+            </Reveal>
+          </div>
 
-          {/* Framed product demo */}
-          <Reveal delay={0.26} style={{ marginTop: '64px', width: '100%', maxWidth: '880px' }}>
-            <MediaFrame chrome hero label="PosturePal — live posture score">
-              <VideoDemo src="/demo-posture-score.mp4" />
-            </MediaFrame>
+          {/* Live posture animation — the hero highlight */}
+          <Reveal delay={0.14}>
+            <HeroBackdrop variant="showcase" />
           </Reveal>
         </div>
       </section>
@@ -167,8 +160,8 @@ export default function HomePage() {
               ))}
             </div>
             <Reveal delay={0.12}>
-              <MediaFrame>
-                <VideoDemo src="/demo-slouch-alerts.mp4" />
+              <MediaFrame chrome label="PosturePal — live posture score">
+                <VideoDemo src="/demo-posture-score.mp4" />
               </MediaFrame>
             </Reveal>
           </div>

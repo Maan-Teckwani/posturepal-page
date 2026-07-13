@@ -1,7 +1,10 @@
-// Ambient looping backdrop — a spine of blocks that slouches amber, gets a
-// green nudge pulse, and straightens. Pure CSS (keyframes in globals.css);
-// decorative only. First block is the base (column-reverse stacks it at the
-// bottom), last is the head, which straightens last.
+// Hero posture animation — the spine slouches amber, a "Sit Straight" reminder
+// sweeps in from the left and glows, and the spine straightens to green in
+// response. Pure CSS (keyframes in globals.css); decorative only.
+//   variant="showcase" — free-standing hero star: full intensity, with the pill.
+//   variant="subtle"   — faint ambient backdrop behind sub-page hero text (spine only).
+// First block is the base (column-reverse stacks it at the bottom); the last is
+// the head, which straightens last.
 const BLOCKS = [
   { w: 'clamp(170px,26vw,278px)', h: 'clamp(30px,4.8vh,46px)', slx: '-12px', sly: '0px',  slr: '-2deg',   o: 0.6,  r: 12 },
   { w: 'clamp(150px,23vw,246px)', h: 'clamp(28px,4.5vh,42px)', slx: '18px',  sly: '0px',  slr: '3.5deg',  o: 0.66, r: 11 },
@@ -11,19 +14,18 @@ const BLOCKS = [
   { w: 'clamp(96px,16vw,174px)',  h: 'clamp(26px,4.2vh,38px)', slx: '28px',  sly: '-4px', slr: '6.5deg',  o: 0.92, r: 10 },
 ];
 
-const HeroBackdrop = ({ variant = 'home' }) => (
-  <div
-    aria-hidden="true"
-    data-pp=""
-    className={`hero-backdrop${variant === 'subtle' ? ' hero-backdrop--subtle' : ''}`}
-  >
+const HeroBackdrop = ({ variant = 'showcase' }) => (
+  <div aria-hidden="true" data-pp="" className={`hero-anim hero-anim--${variant}`}>
     <div className="pp-layer">
       <div className="pp-stack">
         <div className="pp-ground" />
-        <div className="pp-pulse">
-          <div className="pp-halo" />
-          <div className="pp-bar" />
-        </div>
+        {variant === 'showcase' && (
+          <div className="pp-nudge">
+            <div className="pp-beam" />
+            <div className="pp-halo" />
+            <div className="pp-pill"><span className="pp-pill-dot" />Sit Straight</div>
+          </div>
+        )}
         {BLOCKS.map((b, i) => (
           <div
             key={i}
@@ -42,7 +44,7 @@ const HeroBackdrop = ({ variant = 'home' }) => (
         ))}
       </div>
     </div>
-    <div className="hero-backdrop-veil" />
+    {variant === 'subtle' && <div className="hero-backdrop-veil" />}
   </div>
 );
 
