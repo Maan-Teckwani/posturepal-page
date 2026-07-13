@@ -25,7 +25,10 @@ const HOW_STEPS = [
 
 const ROLL_WORDS = ['deep work.', 'flow state.', 'a long coding run.'];
 
-// Word cycler for the how-it-works lede — stacked lines shifted vertically.
+// Word cycler for the how-it-works lede — a single-line window scrolling a
+// vertical stack of words. Each word is one line (1.45em) tall, so the stack is
+// shifted by that much per step (a % here would be relative to the whole stack).
+const LINE_EM = 1.45;
 const WordRoll = () => {
   const [index, setIndex] = React.useState(0);
 
@@ -36,10 +39,10 @@ const WordRoll = () => {
   }, []);
 
   return (
-    <span style={{ display: 'inline-block', height: '1.45em', overflow: 'hidden', verticalAlign: 'bottom' }}>
-      <span style={{ display: 'block', transition: 'transform 0.5s var(--ease)', transform: `translateY(-${index * 100}%)` }}>
+    <span style={{ display: 'inline-block', height: `${LINE_EM}em`, overflow: 'hidden', verticalAlign: 'bottom' }}>
+      <span style={{ display: 'block', transition: 'transform 0.5s var(--ease)', transform: `translateY(-${index * LINE_EM}em)` }}>
         {ROLL_WORDS.map(w => (
-          <span key={w} style={{ display: 'block', height: '1.45em', fontWeight: 600, color: 'var(--forest)' }}>{w}</span>
+          <span key={w} style={{ display: 'block', height: `${LINE_EM}em`, lineHeight: `${LINE_EM}em`, fontWeight: 600, color: 'var(--forest)' }}>{w}</span>
         ))}
       </span>
     </span>
