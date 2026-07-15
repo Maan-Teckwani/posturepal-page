@@ -11,9 +11,12 @@ import VideoDemo from './VideoDemo';
 import FaqList from './FaqList';
 
 // ── Config the owner should review before launch ────────────────────────────
-// Where team-demo requests land. Swap for a dedicated sales inbox or replace
-// the form CTA with a Calendly link when one exists.
+// Where team-demo requests land, shown to visitors and used as the reply-to on
+// the Web3Forms submission.
 const SALES_EMAIL = 'maan@posturepal.in';
+// Web3Forms access key (safe to expose client-side — it only routes to your
+// verified inbox). Set NEXT_PUBLIC_WEB3FORMS_KEY in .env.local and in Vercel.
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 // ─────────────────────────────────────────────────────────────────────────────
 
 const B2B_FAQS = [
@@ -55,27 +58,79 @@ const ROLLOUT_STEPS = [
   { step: 'STEP 03', title: 'Hear about it', body: 'People feel the difference in weeks — and tell you. Expand when you\'re ready.' },
 ];
 
-// Demo-request form — composes an email to SALES_EMAIL without adding any
-// backend or external service.
-const DemoRequestForm = () => {
-  const [email, setEmail] = React.useState('');
-  const [sent, setSent] = React.useState(false);
+// Small inline control: shows SALES_EMAIL with a one-click copy button so
+// visitors can write to us directly without opening a mail client.
+const EmailCopy = () => {
+  const [copied, setCopied] = React.useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const subject = 'Team demo request — PosturePal';
-    const body = `Hi PosturePal team,\n\nI'd like to book a 20-minute demo for my team.\n\nWork email: ${email}\n`;
-    window.location.href = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+  React.useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(t);
+  }, [copied]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(SALES_EMAIL).then(() => setCopied(true)).catch(() => {});
   };
 
-  if (sent) {
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+      <a href={`mailto:${SALES_EMAIL}`} style={{ color: 'var(--accent)', fontWeight: 600 }}>{SALES_EMAIL}</a>
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label={copied ? 'Email copied' : 'Copy email address'}
+        style={{
+          cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.02em',
+          color: copied ? 'var(--accent)' : 'var(--sage)', background: 'transparent',
+          border: '1px solid rgba(255,255,255,0.18)', borderRadius: '999px', padding: '4px 12px',
+        }}
+      >
+        {copied ? '✓ Copied' : 'Copy'}
+      </button>
+    </div>
+  );
+};
+
+// Demo-request form — registers interest via Web3Forms, which emails the
+// submitted address straight to SALES_EMAIL. No backend of our own.
+const DemoRequestForm = () => {
+  const [email, setEmail] = React.useState('');
+  const [status, setStatus] = React.useState('idle'); // idle | sending | sent | error
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!WEB3FORMS_KEY) {
+      setStatus('error');
+      return;
+    }
+    setStatus('sending');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: 'Team demo request — PosturePal',
+          from_name: 'PosturePal for Teams',
+          email,
+          replyto: email,
+          message: `New team demo request.\n\nWork email: ${email}`,
+        }),
+      });
+      const data = await res.json();
+      setStatus(data.success ? 'sent' : 'error');
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (status === 'sent') {
     return (
       <div style={{ marginTop: '24px', background: 'var(--forest-deep)', border: '1.5px solid var(--accent)', borderRadius: 'var(--radius-md)', padding: '20px 22px' }}>
-        <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--accent)' }}>✓ Request received</div>
+        <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--accent)' }}>✓ Interest registered</div>
         <p style={{ fontSize: '0.95rem', lineHeight: 1.55, color: 'var(--sage)', margin: '6px 0 0' }}>
-          Your email app should have opened — or write to us directly at{' '}
-          <a href={`mailto:${SALES_EMAIL}`} style={{ color: 'var(--accent)' }}>{SALES_EMAIL}</a>.
+          Thanks — we&apos;ll reach out to you shortly. Prefer to write first? Reach us at <EmailCopy />
         </p>
       </div>
     );
@@ -94,11 +149,19 @@ const DemoRequestForm = () => {
           className="field-input field-input--dark"
           style={{ flex: 1, minWidth: '200px' }}
         />
-        <button type="submit" className="btn btn-accent" style={{ padding: '13px 24px' }}>Book a demo</button>
+        <button type="submit" className="btn btn-accent" style={{ padding: '13px 24px' }} disabled={status === 'sending'}>
+          {status === 'sending' ? 'Sending…' : 'Register interest'}
+        </button>
       </form>
-      <p style={{ fontSize: '0.82rem', fontWeight: 500, color: '#8FA396', margin: '14px 0 0' }}>
-        Opens your email app — or write to us at {SALES_EMAIL}. No spam.
-      </p>
+      {status === 'error' && (
+        <p style={{ fontSize: '0.82rem', fontWeight: 500, color: '#E5A3A3', margin: '12px 0 0' }}>
+          Something went wrong. Please write to us directly instead.
+        </p>
+      )}
+      <div style={{ fontSize: '0.82rem', fontWeight: 500, color: '#8FA396', margin: '14px 0 0', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <span>Enter your email and we&apos;ll reach out — or write to us at</span>
+        <EmailCopy />
+      </div>
     </>
   );
 };
