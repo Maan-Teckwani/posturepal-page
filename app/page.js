@@ -8,7 +8,7 @@ export const metadata = {
     title: 'PosturePal — AI Posture Coaching, On-Device & Private',
     description:
       'On-device AI that watches your posture — never your privacy. For teams and individuals.',
-    images: ['/Logo.png'],
+    images: ['/logo.png'],
   },
 };
 

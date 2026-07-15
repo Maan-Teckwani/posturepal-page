@@ -8,7 +8,7 @@ export const metadata = {
     title: 'PosturePal — Fix Your Posture with AI',
     description:
       'Real-time slouch alerts from your webcam. 100% offline, no subscription — one payment, lifetime access.',
-    images: ['/Logo.png'],
+    images: ['/logo.png'],
   },
 };
 

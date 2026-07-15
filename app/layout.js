@@ -31,9 +31,12 @@ export const metadata = {
   description:
     "On-device posture AI that nudges you the moment you slouch. Private, offline, no hardware.",
   icons: {
-    icon: "/Logo.png",
-    shortcut: "/Logo.png",
-    apple: "/Logo.png",
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
 

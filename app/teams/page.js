@@ -8,7 +8,7 @@ export const metadata = {
     title: 'PosturePal for Teams',
     description:
       'A private, on-device posture coach on every employee laptop. Real-time nudges, no hardware, no footage leaving the machine.',
-    images: ['/Logo.png'],
+    images: ['/logo.png'],
   },
 };
 
